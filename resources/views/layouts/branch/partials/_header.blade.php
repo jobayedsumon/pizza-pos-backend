@@ -1,5 +1,5 @@
 <div id="headerMain" class="d-none">
-    <header id="header" class="navbar justify-content-center navbar-fixed navbar-height navbar-flush navbar-container navbar-bordered">
+    <header id="header" class="navbar justify-content-between navbar-fixed navbar-height navbar-flush navbar-container navbar-bordered">
 
         <div class="d-flex justify-content-around">
 
@@ -155,11 +155,11 @@
                                 </div>
                             </div>
 
-                            {{--<div class="dropdown-divider"></div>
+{{--                            --}}{{--<div class="dropdown-divider"></div>--}}
 
-                            <a class="dropdown-item" href="{{route('branch.settings')}}">
-                                <span class="text-truncate pr-2" title="Settings">{{translate('settings')}}</span>
-                            </a>--}}
+{{--                            <a class="dropdown-item" href="{{route('branch.settings')}}">--}}
+{{--                                <span class="text-truncate pr-2" title="Settings">{{translate('settings')}}</span>--}}
+{{--                            </a>--}}
 
                             <div class="dropdown-divider"></div>
 
@@ -188,8 +188,17 @@
                     <!-- End Account -->
                 </div>
             </div>
+
             <!-- End Navbar -->
         </div>
+
+
+        <div class="navbar-nav justify-content-center">
+            <a target="_blank" href="/" class="btn btn-primary">
+                Admin Login
+            </a>
+        </div>
+
     </header>
 </div>
 <div id="headerFluid" class="d-none"></div>

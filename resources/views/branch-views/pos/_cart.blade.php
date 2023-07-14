@@ -137,12 +137,17 @@ if($extra_discount) {
         <dt  class="col-6">{{translate('VAT/TAX:')}} : </dt>
         <dd class="col-6 text-right">{{ \App\CentralLogics\Helpers::set_symbol(round($total_tax,2)) }}</dd>
 
+        <dt  class="col-6 d-none deliveryChargeInTable pb-2">{{translate('delivery_charge')}} : </dt>
+        <dd class="col-6 d-none text-right deliveryChargeInTable pb-2" id="deliveryChargeInTableValue"></dd>
+
         <dt  class="col-6 border-top font-weight-bold pt-2">{{translate('total')}} : </dt>
-        <dd class="col-6 text-right border-top font-weight-bold pt-2">{{ \App\CentralLogics\Helpers::set_symbol(round($total+$total_tax, 2)) }}</dd>
+        <dd class="col-6 text-right border-top font-weight-bold pt-2" id="posTotalValue">{{ \App\CentralLogics\Helpers::set_symbol(round($total+$total_tax, 2)) }}</dd>
     </dl>
 
     <form action="{{route('branch.pos.order')}}" id='order_place' method="post">
         @csrf
+
+        @include('common.order-type-pos')
 
         <div class="pt-4 mb-4">
             <div class="text-dark d-flex mb-2">{{translate('Paid_By')}} :</div>
@@ -155,6 +160,10 @@ if($extra_discount) {
                     <input type="radio" value="card" id="card" name="type" hidden="">
                     <label for="card" class="btn btn-bordered px-4 mb-0">{{translate('Card')}}</label>
                 </li>
+{{--                <li class="d-none" id="posCod">--}}
+{{--                    <input type="radio" value="cod" id="cod" name="type" hidden="">--}}
+{{--                    <label for="cod" class="btn btn-bordered px-4 mb-0">{{translate('COD')}}</label>--}}
+{{--                </li>--}}
                 <li id="pay_after_eating_li" style="display: {{ session('table_id') ?  '' : 'none' }}">
                     <input type="radio" value="pay_after_eating" id="pay_after_eating" name="type" hidden="">
                     <label for="pay_after_eating" class="btn btn-bordered px-4 mb-0">{{translate('pay_after_eating')}}</label>

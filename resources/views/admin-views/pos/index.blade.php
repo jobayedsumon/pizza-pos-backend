@@ -260,9 +260,9 @@
                                     <div class="form-group">
                                         <label class="input-label">
                                             {{translate('Email')}}
-                                            <span class="input-label-secondary text-danger">*</span>
+                                            <span class="input-label-secondary"></span>
                                         </label>
-                                        <input type="email" name="email" class="form-control" value="" placeholder="Ex : ex@example.com" required="">
+                                        <input type="email" name="email" class="form-control" value="" placeholder="Ex : ex@example.com">
                                     </div>
                                 </div>
                                 <div class="col-12 col-lg-6">

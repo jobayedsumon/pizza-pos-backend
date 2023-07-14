@@ -640,7 +640,7 @@ class POSController extends Controller
             'f_name' => 'required',
             'l_name' => 'required',
             'phone' => 'required|unique:users',
-            'email' => 'required|email|unique:users',
+            'email' => 'nullable|email|unique:users',
 
         ]);
         $user = User::create([

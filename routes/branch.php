@@ -37,6 +37,8 @@ Route::group(['namespace' => 'Branch', 'as' => 'branch.'], function () {
             Route::post('tax', 'POSController@update_tax')->name('tax');
             Route::post('discount', 'POSController@update_discount')->name('discount');
             Route::get('customers', 'POSController@get_customers')->name('customers');
+            Route::get('customer/address-list', 'POSController@customer_address_list')->name('customer-address-list');
+            Route::get('address', 'POSController@customer_address')->name('customer-address');
             Route::post('order', 'POSController@place_order')->name('order');
             Route::get('orders', 'POSController@order_list')->name('orders');
             Route::post('delivery-popup-orders', 'POSController@delivery_popup_orders')->name('delivery-popup-orders');

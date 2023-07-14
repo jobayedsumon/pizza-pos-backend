@@ -68,7 +68,7 @@
 
                             <div class="p-2 p-sm-4">
                                 <div class="d-flex flex-row gap-2 mb-3">
-                                    <select onchange="store_key('customer_id',this.value)" id='customer' name="customer_id" data-placeholder="{{translate('Walk_In_Customer')}}" class="js-data-example-ajax form-control">
+                                    <select onchange="changeCustomerId(this.value)" id='customer' name="customer_id" data-placeholder="{{translate('Walk_In_Customer')}}" class="js-data-example-ajax form-control">
 
                                     </select>
                                     <button class="btn btn-success rounded text-nowrap" id="add_new_customer" type="button" data-toggle="modal" data-target="#add-customer" title="Add Customer">
@@ -147,9 +147,9 @@
                                     <div class="form-group">
                                         <label class="input-label">
                                             {{translate('Email')}}
-                                            <span class="input-label-secondary text-danger">*</span>
+                                            <span class="input-label-secondary"></span>
                                         </label>
-                                        <input type="email" name="email" class="form-control" value="" placeholder="Ex : ex@example.com" required="">
+                                        <input type="email" name="email" class="form-control" value="" placeholder="Ex : ex@example.com">
                                     </div>
                                 </div>
                                 <div class="col-12 col-lg-6">
@@ -263,6 +263,24 @@
         nurl.searchParams.set('keyword', keyword);
         location.href = nurl;
     });
+
+    function changeCustomerId(value) {
+        store_key('customer_id', value);
+        var node = $('#customer_address_id');
+
+        $.get({
+            url: '{{route('branch.pos.customer-address-list')}}' + '?customer_id=' + value,
+            success: function (data) {
+                node.html('');
+                node.append('<option value="">New Address</option>');
+                data.addresses.forEach(function (address) {
+                    node.append('<option value="' + address.id + '">' + address.address + '</option>')
+                });
+                node.trigger('change');
+            },
+        })
+
+    }
 
     function store_key(key, value) {
         $.ajaxSetup({
@@ -582,6 +600,9 @@
         }
 
     };
+
+
+    $('#customer_address_id').select2();
 
 
 

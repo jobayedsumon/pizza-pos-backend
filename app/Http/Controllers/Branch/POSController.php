@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Model\AddOn;
 use App\Model\Branch;
 use App\Model\Category;
+use App\Model\CustomerAddress;
 use App\Model\Notification;
 use App\Model\Product;
 use App\Model\Order;
@@ -17,10 +18,26 @@ use Brian2694\Toastr\Facades\Toastr;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use function App\CentralLogics\translate;
 
 class POSController extends Controller
 {
+    public function customer_address_list(Request $request)
+    {
+        $customer_addresses = CustomerAddress::query()->where('user_id', $request->customer_id)->get();
+        return response()->json([
+            'addresses' => $customer_addresses
+        ]);
+    }
+
+    public function customer_address(Request $request)
+    {
+        $customer_address = CustomerAddress::query()->where('id', $request->address_id)->first();
+        return response()->json([
+            'address' => $customer_address
+        ]);
+    }
     public function index(Request $request)
     {
         $category = $request->query('category_id', 0);
@@ -413,6 +430,38 @@ class POSController extends Controller
             return back();
         }
 
+
+        if ($request->get('receive_by') == 'delivery') {
+            if (!$request->get('customer_address_id') && (!$request->get('address') || !$request->get('contact_person_name')
+                || !$request->get('contact_person_number'))) {
+                Toastr::error(translate('Please provide required delivery address information'));
+                return back();
+            }
+
+            $address = [
+                'user_id' => session()->get('customer_id') ?? null,
+                'contact_person_name' => $request->contact_person_name,
+                'contact_person_number' => $request->contact_person_number,
+                'floor' => $request->floor,
+                'house' => $request->house,
+                'road' => $request->road,
+                'address_type' => $request->address_type,
+                'address' => $request->address,
+                'longitude' => $request->longitude,
+                'latitude' => $request->latitude,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+
+            if ($request->get('customer_address_id')) {
+                $customer_address = CustomerAddress::find($request->get('customer_address_id'));
+                $customer_address->update($address);
+            } else {
+                $customer_address = CustomerAddress::create($address);
+            }
+
+        }
+
         $cart = $request->session()->get('cart');
         $total_tax_amount = 0;
         $total_addon_price = 0;
@@ -431,15 +480,46 @@ class POSController extends Controller
         $order->user_id = session()->get('customer_id') ?? null;
         $order->coupon_discount_title = $request->coupon_discount_title == 0 ? null : 'coupon_discount_title';
         $order->payment_status = $request->type == 'pay_after_eating' ? 'unpaid' : 'paid';
+
+        if ($request->receive_by == 'delivery' && $request->type == 'cod') {
+            $order->payment_status = 'unpaid';
+        }
+
         $order->order_status = session()->get('table_id') ? 'confirmed' : 'delivered';
+
+        if ($request->receive_by == 'delivery') {
+            if ($request->type == 'cod') {
+                $order->order_status = 'pending';
+            } else {
+                $order->order_status = 'confirmed';
+            }
+        }
+
         $order->order_type = session()->get('table_id') ? 'dine_in' : 'pos';
+
+        if ($request->receive_by == 'delivery') {
+            $order->order_type = 'delivery';
+        }
+
         $order->coupon_code = $request->coupon_code ?? null;
         $order->payment_method = $request->type;
         $order->transaction_reference = $request->transaction_reference ?? null;
+
         $order->delivery_charge = 0; //since pos, no distance, no d. charge
         $order->delivery_address_id = $request->delivery_address_id ?? null;
         $order->delivery_date = Carbon::now()->format('Y-m-d');
         $order->delivery_time = Carbon::now()->format('H:i:s');
+
+
+        if ($request->receive_by == 'delivery') {
+            $order->delivery_charge = Helpers::get_delivery_charge($request->distance);
+            $order->delivery_address_id = @$customer_address->id ?? null;
+            $order->preparation_time = Helpers::get_business_settings('default_preparation_time') ?? 0;
+            $order->order_state = 'current';
+            $order->delivery_address = isset($customer_address) ? json_encode($customer_address) : null;
+        }
+
+
         $order->order_note = null;
         $order->checked = 1;
         $order->created_at = now();
@@ -559,8 +639,35 @@ class POSController extends Controller
 
             Toastr::success(translate('order_placed_successfully'));
 
+
+            $user = User::query()->find($order->user_id);
+            $fcm_token = $user->cm_firebase_token;
+            $value = Helpers::order_status_update_message(($request->payment_method=='cash_on_delivery')?'pending':'confirmed');
+            try {
+                //send push notification
+                if ($value) {
+                    $data = [
+                        'title' => translate('Order'),
+                        'description' => $value,
+                        'order_id' => $order_id,
+                        'image' => '',
+                        'type'=>'order_status',
+                    ];
+                    Helpers::send_push_notif_to_device($fcm_token, $data);
+                }
+
+                //send email
+                $emailServices = Helpers::get_business_settings('mail_config');
+                if (isset($emailServices['status']) && $emailServices['status'] == 1) {
+                    Mail::to($user->email)->send(new \App\Mail\OrderPlaced($order_id));
+                }
+
+            } catch (\Exception $e) {
+
+            }
+
             //send notification to kitchen
-            if ($order->order_type == 'dine_in'){
+            if ($order->order_type == 'dine_in' || $order->order_type == 'delivery'){
                 $notification = new Notification;
                 $notification->title =  "You have a new order from POS - (Order Confirmed). ";
                 $notification->description = $order->id;
@@ -617,7 +724,7 @@ class POSController extends Controller
             'f_name' => 'required',
             'l_name' => 'required',
             'phone' => 'required|unique:users',
-            'email' => 'required|email|unique:users',
+            'email' => 'nullable|email|unique:users',
 
         ]);
         $user = User::query()->create([
