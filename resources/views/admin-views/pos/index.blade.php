@@ -709,6 +709,7 @@
             if($('#customer').val())
             {
                 $(this).append('<input type="hidden" name="user_id" value="'+$('#customer').val()+'" /> ');
+                $(this).append('<input type="hidden" name="branch_id" value="'+$('#branch').val()+'" /> ');
             }
             return true;
         });
