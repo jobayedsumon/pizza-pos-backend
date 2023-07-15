@@ -30,6 +30,7 @@ Route::group(['namespace' => 'Branch', 'as' => 'branch.'], function () {
             Route::get('quick-view', 'POSController@quick_view')->name('quick-view');
             Route::post('variant_price', 'POSController@variant_price')->name('variant_price');
             Route::post('add-to-cart', 'POSController@addToCart')->name('add-to-cart');
+            Route::get('reorder/{order_id}', 'POSController@reorder')->name('reorder');
             Route::post('remove-from-cart', 'POSController@removeFromCart')->name('remove-from-cart');
             Route::post('cart-items', 'POSController@cart_items')->name('cart_items');
             Route::post('update-quantity', 'POSController@updateQuantity')->name('updateQuantity');
@@ -55,6 +56,7 @@ Route::group(['namespace' => 'Branch', 'as' => 'branch.'], function () {
 
         Route::group(['prefix' => 'orders', 'as' => 'orders.'], function () {
             Route::get('list/{status}', 'OrderController@list')->name('list');
+            Route::get('orders-modal/customer', 'OrderController@orders_modal_customer')->name('orders-modal-customer');
             Route::any('orders-modal/{status}', 'OrderController@orders_modal')->name('orders-modal');
             Route::get('unchecked-orders-modal/{status}', 'OrderController@unchecked_orders_modal')->name('unchecked-orders-modal');
             Route::post('order-details-modal', 'OrderController@order_details_modal')->name('order-details-modal');

@@ -117,18 +117,24 @@ class POSController extends Controller
 
     public function get_customers(Request $request)
     {
-        $key = explode(' ', $request['q']);
-        $data = DB::table('users')
-            ->where(function ($q) use ($key) {
-                foreach ($key as $value) {
-                    $q->orWhere('f_name', 'like', "%{$value}%")
-                        ->orWhere('l_name', 'like', "%{$value}%")
-                        ->orWhere('phone', 'like', "%{$value}%");
-                }
-            })
-            ->whereNotNull(['f_name', 'l_name', 'phone'])
-            ->limit(8)
-            ->get([DB::raw('id, CONCAT(f_name, " ", l_name, " (", phone ,")") as text')]);
+        if ($request->customer_id) {
+            $data = DB::table('users')
+                ->where('id', $request->customer_id)
+                ->get([DB::raw('id, CONCAT(f_name, " ", l_name, " (", phone ,")") as text')]);
+        } else {
+            $key = explode(' ', $request['q']);
+            $data = DB::table('users')
+                ->where(function ($q) use ($key) {
+                    foreach ($key as $value) {
+                        $q->orWhere('f_name', 'like', "%{$value}%")
+                            ->orWhere('l_name', 'like', "%{$value}%")
+                            ->orWhere('phone', 'like', "%{$value}%");
+                    }
+                })
+                ->whereNotNull(['f_name', 'l_name', 'phone'])
+                ->limit(8)
+                ->get([DB::raw('id, CONCAT(f_name, " ", l_name, " (", phone ,")") as text')]);
+        }
 
         $data[] = (object)['id' => false, 'text' => translate('walk_in_customer')];
 
@@ -263,6 +269,86 @@ class POSController extends Controller
         return response()->json([
             'data' => $data
         ]);
+    }
+
+    public function reorder($order_id)
+    {
+        $order = Order::query()->findOrFail($order_id);
+
+        $cart = collect([]);
+        session()->forget('cart');
+
+        foreach ($order->details as $details) {
+
+
+            $product = Product::query()->find($details->product_id);
+
+            $data = array();
+            $data['id'] = $product->id;
+            $str = '';
+            $variations = [];
+            $price = 0;
+            $addon_price = 0;
+
+            //Gets all the choice values of customer choice option and generate a string like Black-S-Cotton
+//            foreach (json_decode($product->choice_options) as $key => $choice) {
+//                $data[$choice->name] = $request[$choice->name];
+//                $variations[$choice->title] = $request[$choice->name];
+//                if ($str != null) {
+//                    $str .= '-' . str_replace(' ', '', $request[$choice->name]);
+//                } else {
+//                    $str .= str_replace(' ', '', $request[$choice->name]);
+//                }
+//            }
+
+            $data['variations'] = $variations;
+            $data['variant'] = $details['variant'];
+
+
+
+            //Check the string and decreases quantity for the stock
+            if ($str != null) {
+                $count = count(json_decode($product->variations));
+                for ($i = 0; $i < $count; $i++) {
+                    if (json_decode($product->variations)[$i]->type == $str) {
+                        $price = json_decode($product->variations)[$i]->price;
+                    }
+                }
+            } else {
+                $price = $product->price;
+            }
+
+            $data['quantity'] = $details['quantity'];
+            $data['price'] = $price;
+            $data['name'] = $product->name;
+            $data['discount'] = Helpers::discount_calculate($product, $price);
+            $data['image'] = $product->image;
+            $data['add_ons'] = [];
+            $data['add_on_qtys'] = [];
+            $data['allergies'] = [];
+
+            if ($details['add_on_ids']) {
+                foreach (json_decode($details['add_on_ids']) as $index => $id) {
+                    $addon_price += AddOn::find($id)->price * json_decode($details['add_on_qtys'])[$index];
+                }
+                $data['add_on_qtys'] = json_decode($details['add_on_qtys']);
+                $data['add_ons'] = json_decode($details['add_on_ids']);
+            }
+
+            $data['addon_price'] = $addon_price;
+
+            if ($details['allergy_ids']) {
+                $data['allergies'] = json_decode($details['allergy_ids']);
+            }
+
+            $cart->push($data);
+        }
+
+        session()->put('customer_id', $order->user_id);
+
+        session()->put('cart', $cart);
+
+        return redirect()->back();
     }
 
     public function cart_items()

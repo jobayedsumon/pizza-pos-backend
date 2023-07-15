@@ -177,13 +177,18 @@
                             {{--</div>--}}
                             {{--</div>--}}
 
-                            <div class="d-flex justify-content-center gap-2">
+                            <div class="d-flex justify-content-center gap-2 align-items-center">
                                 <a class="btn btn-sm btn-outline-info square-btn order-details-view-btn" data-id="{{$order['id']}}"
                                    href="javascript:void(0);">
                                     <i class="tio-visible"></i></a>
                                 <button class="btn btn-sm btn-outline-success square-btn" target="_blank" type="button"
                                         onclick="print_invoice('{{$order->id}}')"><i
                                         class="tio-download"></i></button>
+                                @if($status == 'customer')
+                                <a class="btn btn-sm btn-outline-info " href="{{ route('branch.pos.reorder', $order->id) }}">
+                                    Reorder
+                                </a>
+                                @endif
                             </div>
                         </td>
                     </tr>

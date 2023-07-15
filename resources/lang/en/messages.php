@@ -2292,4 +2292,6 @@
   'Please fill all the fields' => 'Please fill all the fields',
   'COD' => 'COD',
   'cod' => 'Cod',
+  'Previous_Orders' => 'Previous Orders',
+  148 => '148',
 );
