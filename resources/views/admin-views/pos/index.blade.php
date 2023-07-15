@@ -177,17 +177,20 @@
                             <!-- End POS Title -->
 
                             <div class="p-2 p-sm-4">
-                                <div class="form-group d-flex gap-2">
-                                    <select onchange="store_key('customer_id',this.value)" id='customer' name="customer_id" data-placeholder="{{translate('Walk_In_Customer')}}" class="js-data-example-ajax form-control form-ellipsis"></select>
+                                <div class="form-group d-flex gap-2 mb-3">
+                                    <select onchange="changeCustomerId(this.value)" id='customer' name="customer_id" data-placeholder="{{translate('Walk_In_Customer')}}" class="js-data-example-ajax form-control form-ellipsis"></select>
                                     <button class="btn btn-success rounded text-nowrap" id="add_new_customer" type="button" data-toggle="modal" data-target="#add-customer" title="Add Customer">
                                         <i class="tio-add"></i>
                                         {{translate('Customer')}}
                                     </button>
                                 </div>
+                                <a type="button" id="previousOrders" class="btn btn-primary mb-3 btn-sm" data-toggle="modal" data-target="#orders-customer-modal">
+                                    {{translate('Previous_Orders')}}
+                                </a>
                                 <div class="form-group">
                                     <label for="branch" class="font-weight-semibold fz-16 text-dark">{{translate('select_branch')}}</label>
                                     <select onchange="store_key('branch_id',this.value)" id='branch' name="branch_id" class="js-select2-custom-x form-ellipsis form-control">
-                                        <option disabled selected>{{translate('select_branch')}}</option>
+                                        <option disabled>{{translate('select_branch')}}</option>
                                         @foreach($branches as $branch)
                                             <option @if(session()->get('branch_id') == $branch['id']) 'selected' @endif value="{{$branch['id']}}">{{$branch['name']}}</option>
                                         @endforeach
@@ -710,6 +713,32 @@
             return true;
         });
 
+        function changeCustomerId(value) {
+            store_key('customer_id', value);
+            var node = $('#customer_address_id');
+
+            $.get({
+                url: '{{route('branch.pos.customer-address-list')}}' + '?customer_id=' + value,
+                success: function (data) {
+                    node.html('');
+                    node.append('<option value="">New Address</option>');
+                    data.addresses.forEach(function (address) {
+                        node.append('<option value="' + address.id + '">' + address.address + '</option>')
+                    });
+                    node.trigger('change');
+                },
+            });
+
+            $.get({
+                url: '{{route('branch.orders.orders-modal-customer')}}' + '?customer_id=' + value,
+                headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                success: function (response) {
+                    $('#orders-customer-table').html(response)
+                },
+            });
+
+        }
+
         function store_key(key, value) {
             $.ajaxSetup({
                 headers: {
@@ -735,6 +764,29 @@
                 },
             });
         };
+
+        @if(session()->get('customer_id'))
+
+        var customerSelect = $('.js-data-example-ajax');
+
+        $.get({
+            url: '{{route('branch.pos.customers')}}',
+            data: {
+                customer_id: {{session()->get('customer_id')}}
+            },
+            success: function (data) {
+                var option = new Option(data[0].text, data[0].id, true, true);
+                customerSelect.append(option).trigger('change');
+                customerSelect.trigger({
+                    type: 'select2:select',
+                    params: {
+                        data: data
+                    }
+                });
+            }
+        });
+
+        @endif
 
         $(document).ready(function (){
             $('#branch').on('change', function (){
@@ -776,4 +828,20 @@
 @endpush
 {{-- </body>
 </html> --}}
+
+<!-- Modal -->
+<div class="modal fade" id="orders-customer-modal" role="dialog" aria-labelledby="orders-customer-modal-label" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content border-primary">
+            <div class="modal-body">
+                <button type="button" class="close modal-close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div id="orders-customer-table">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 

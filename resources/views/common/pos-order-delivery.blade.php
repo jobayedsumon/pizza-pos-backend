@@ -71,6 +71,8 @@
     <script src="https://maps.googleapis.com/maps/api/js?key={{ \App\Model\BusinessSetting::where('key', 'map_api_key')->first()->value }}&libraries=places,geometry&v=3.51"></script>
 <script>
 
+    var customerAddressSelect = $.HSCore.components.HSSelect2.init($('#customer_address_id'));
+
     var lat1 = {{ $branch->latitude }};
     var lng1 = {{ $branch->longitude }};
 
@@ -92,8 +94,6 @@
     var addressId = {{ isset($delivery_address) ? $delivery_address->id : 0 }};
     var latitude = {{ isset($delivery_address) ? $delivery_address->latitude : 0 }};
     var longitude = {{ isset($delivery_address) ? $delivery_address->longitude : 0 }};
-
-    var customerAddressSelect = $('#customer_address_id').select2();
 
     google.maps.event.addDomListener(window, 'load', initialize);
 

@@ -340,6 +340,7 @@ class POSController extends Controller
         $delivery_address['delivery_charge'] = $order->delivery_charge;
 
         session()->put('customer_id', $order->user_id);
+        session()->put('branch_id', $order->branch_id);
 
         session()->put('cart', $cart);
 
