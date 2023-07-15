@@ -1,23 +1,20 @@
-@php
-    $delivery_charge = \App\CentralLogics\Helpers::get_delivery_charge(0);
-    $branch = \App\Model\Branch::first();
-@endphp
+
 
 <div class="pt-4">
     <div class="text-dark d-flex mb-2">{{translate('Receive_By')}} :</div>
     <ul class="list-unstyled option-buttons">
         <li>
-            <input class="receiveBy" type="radio" id="pick-up" value="pick-up" name="receive_by" hidden="" checked="">
+            <input class="receiveBy" type="radio" id="pick-up" value="pick-up" name="receive_by" hidden="" @if(!isset($delivery_address)) checked="" @endif >
             <label for="pick-up" class="btn btn-bordered px-4 mb-0">{{translate('Pickup')}}</label>
         </li>
         <li>
-            <input class="receiveBy" type="radio" value="delivery" id="delivery" name="receive_by" hidden="">
+            <input class="receiveBy" type="radio" value="delivery" id="delivery" name="receive_by" hidden="" @if(isset($delivery_address)) checked="" @endif>
             <label for="delivery" class="btn btn-bordered px-4 mb-0">{{translate('Delivery')}}</label>
         </li>
     </ul>
 </div>
 
-<div class="pt-4 d-none" id="posAddress">
+<div class="pt-4 {{ isset($delivery_address) ? '' : 'd-none' }}" id="posAddress">
 
     <div class="form-group">
         <label>Customer Address List</label>
@@ -33,15 +30,15 @@
         <label class="control-label">{{translate('Address_Line')}}
         <span class="text-danger">*</span>
         </label>
-        <input id="address" type="text" class="form-control" name="address" placeholder="23/A Block,Sector 4">
-        <input type="hidden" name="latitude" id="latitude">
-        <input type="hidden" name="longitude" id="longitude">
+        <input id="address" type="text" class="form-control" name="address" placeholder="23/A Block,Sector 4" value="{{ isset($delivery_address) ? $delivery_address->address : '' }}">
+        <input type="hidden" name="latitude" id="latitude" value="{{ isset($delivery_address) ? $delivery_address->latitude : '' }}">
+        <input type="hidden" name="longitude" id="longitude" value="{{ isset($delivery_address) ? $delivery_address->longitude : '' }}">
         <input type="hidden" name="distance" id="distance">
-        <input type="hidden" name="address_type" id="address_type">
+        <input type="hidden" name="address_type" id="address_type" value="{{ isset($delivery_address) ? $delivery_address->address_type : '' }}">
     </div>
     <div class="form-group">
         <label class="control-label">{{translate('Street_Number')}}</label>
-        <input id="road" type="text" class="form-control" name="road" placeholder="EX: 10th Street">
+        <input id="road" type="text" class="form-control" name="road" placeholder="EX: 10th Street" value="{{ isset($delivery_address) ? $delivery_address->road : '' }}">
     </div>
     <div class="form-group">
         <label class="control-label">
@@ -49,10 +46,10 @@
         </label>
         <div class="row">
             <div class="col-md-6">
-                <input id="house" type="text" class="form-control" name="house" placeholder="EX: 02">
+                <input id="house" type="text" class="form-control" name="house" placeholder="EX: 02" value="{{ isset($delivery_address) ? $delivery_address->house : '' }}">
             </div>
             <div class="col-md-6">
-                <input id="floor" type="text" class="form-control" name="floor" placeholder="EX: 2B">
+                <input id="floor" type="text" class="form-control" name="floor" placeholder="EX: 2B" value="{{ isset($delivery_address) ? $delivery_address->floor : '' }}">
             </div>
         </div>
     </div>
@@ -60,13 +57,13 @@
         <label class="control-label">{{translate('Contact_Person_Name')}}
             <span class="text-danger">*</span>
         </label>
-        <input id="contact_person_name" type="text" class="form-control" name="contact_person_name" placeholder="Enter contact person name">
+        <input id="contact_person_name" type="text" class="form-control" name="contact_person_name" placeholder="Enter contact person name" value="{{ isset($delivery_address) ? $delivery_address->contact_person_name : '' }}">
     </div>
     <div class="form-group">
         <label class="control-label">{{translate('Contact_Person_Number')}}
             <span class="text-danger">*</span>
         </label>
-        <input id="contact_person_number" type="text" class="form-control" name="contact_person_number" placeholder="Enter contact person number">
+        <input id="contact_person_number" type="text" class="form-control" name="contact_person_number" placeholder="Enter contact person number" value="{{ isset($delivery_address) ? $delivery_address->contact_person_number : '' }}">
     </div>
 </div>
 
@@ -78,13 +75,25 @@
     var lng1 = {{ $branch->longitude }};
 
     function calculateDistance(lat2, lng2) {
-        var distance = google.maps.geometry.spherical.computeDistanceBetween(
-            new google.maps.LatLng(lat1, lng1),
-            new google.maps.LatLng(lat2, lng2)
-        );
 
-        return distance / 1000;
+        if (lat2 && lng2) {
+            var distance = google.maps.geometry.spherical.computeDistanceBetween(
+                new google.maps.LatLng(lat1, lng1),
+                new google.maps.LatLng(lat2, lng2)
+            );
+
+            $('#distance').val(distance);
+
+            return distance / 1000;
+        }
     }
+
+    var isDeliverySet = {{ isset($delivery_address) ? 1 : 0 }};
+    var addressId = {{ isset($delivery_address) ? $delivery_address->id : 0 }};
+    var latitude = {{ isset($delivery_address) ? $delivery_address->latitude : 0 }};
+    var longitude = {{ isset($delivery_address) ? $delivery_address->longitude : 0 }};
+
+    var customerAddressSelect = $('#customer_address_id').select2();
 
     google.maps.event.addDomListener(window, 'load', initialize);
 
@@ -101,10 +110,7 @@
             $('#latitude').val(lat2);
             $('#longitude').val(lng2);
 
-            // calculate distance
-            var distance = calculateDistance(lat2, lng2);
-
-            $('#distance').val(distance);
+            calculateDistance(lat2, lng2);
 
         });
     }
@@ -133,7 +139,8 @@
             }
         });
 
-    function get_address(id) {
+
+     function get_address(id) {
         if(id) {
 
             $.get({
@@ -150,12 +157,11 @@
                     $('#contact_person_name').val(address.contact_person_name);
                     $('#contact_person_number').val(address.contact_person_number);
 
-                    var distance = calculateDistance(address.latitude, address.longitude);
-                    $('#distance').val(distance);
+                    calculateDistance(address.latitude, address.longitude);
                 }
             })
 
-        } else {
+        } else if(!isDeliverySet) {
             $('#address').val('');
             $('#latitude').val('');
             $('#longitude').val('');
@@ -166,10 +172,14 @@
             $('#floor').val('');
             $('#contact_person_name').val('');
             $('#contact_person_number').val('');
+
+        } else if(isDeliverySet) {
+            if(addressId) {
+                customerAddressSelect.val(addressId).trigger('change');
+            }
+            calculateDistance(latitude, longitude);
         }
     }
-
-
 
 </script>
 @endpush

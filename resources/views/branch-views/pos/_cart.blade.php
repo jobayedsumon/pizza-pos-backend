@@ -16,6 +16,15 @@
         $discount_type = 'amount';
         $discount_on_product = 0;
         $total_tax = 0;
+
+        $branch = \App\Model\Branch::first();
+        if (session()->get('delivery_address')) {
+            $delivery_address = json_decode(session()->get('delivery_address'));
+            $delivery_charge = $delivery_address->delivery_charge;
+        } else {
+            $delivery_charge = \App\CentralLogics\Helpers::get_delivery_charge(0);
+        }
+
         ?>
         @if(session()->has('cart') && count( session()->get('cart')) > 0)
                 <?php
@@ -137,17 +146,24 @@ if($extra_discount) {
         <dt  class="col-6">{{translate('VAT/TAX:')}} : </dt>
         <dd class="col-6 text-right">{{ \App\CentralLogics\Helpers::set_symbol(round($total_tax,2)) }}</dd>
 
-        <dt  class="col-6 d-none deliveryChargeInTable pb-2">{{translate('delivery_charge')}} : </dt>
-        <dd class="col-6 d-none text-right deliveryChargeInTable pb-2" id="deliveryChargeInTableValue"></dd>
+        <dt  class="col-6 {{ session()->get('delivery_address') ? '' : 'd-none' }} deliveryChargeInTable pb-2">{{translate('delivery_charge')}} : </dt>
+        <dd class="col-6 {{ session()->get('delivery_address') ? '' : 'd-none' }} text-right deliveryChargeInTable pb-2" id="deliveryChargeInTableValue">
+            @if(session()->get('delivery_address'))
+                {{ \App\CentralLogics\Helpers::set_symbol($delivery_charge) }}
+            @endif
+        </dd>
 
         <dt  class="col-6 border-top font-weight-bold pt-2">{{translate('total')}} : </dt>
-        <dd class="col-6 text-right border-top font-weight-bold pt-2" id="posTotalValue">{{ \App\CentralLogics\Helpers::set_symbol(round($total+$total_tax, 2)) }}</dd>
+
+        <dd class="col-6 text-right border-top font-weight-bold pt-2" id="posTotalValue">{{ \App\CentralLogics\Helpers::set_symbol(round(
+    isset($delivery_address) ? $total+$total_tax + $delivery_charge : $total+$total_tax
+    , 2)) }}</dd>
     </dl>
 
     <form action="{{route('branch.pos.order')}}" id='order_place' method="post">
         @csrf
 
-        @include('common.order-type-pos')
+        @include('common.pos-order-delivery')
 
         <div class="pt-4 mb-4">
             <div class="text-dark d-flex mb-2">{{translate('Paid_By')}} :</div>

@@ -615,11 +615,6 @@
 
     };
 
-
-    $('#customer_address_id').select2();
-
-
-
     // INITIALIZATION OF SELECT2
     // =======================================================
     // $('.js-select2-custom').each(function () {

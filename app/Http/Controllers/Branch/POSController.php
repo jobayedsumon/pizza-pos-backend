@@ -285,38 +285,22 @@ class POSController extends Controller
 
             $data = array();
             $data['id'] = $product->id;
-            $str = '';
-            $variations = [];
             $price = 0;
             $addon_price = 0;
+            $variations = [];
 
-            //Gets all the choice values of customer choice option and generate a string like Black-S-Cotton
-//            foreach (json_decode($product->choice_options) as $key => $choice) {
-//                $data[$choice->name] = $request[$choice->name];
-//                $variations[$choice->title] = $request[$choice->name];
-//                if ($str != null) {
-//                    $str .= '-' . str_replace(' ', '', $request[$choice->name]);
-//                } else {
-//                    $str .= str_replace(' ', '', $request[$choice->name]);
-//                }
-//            }
-
-            $data['variations'] = $variations;
-            $data['variant'] = $details['variant'];
-
-
-
-            //Check the string and decreases quantity for the stock
-            if ($str != null) {
-                $count = count(json_decode($product->variations));
-                for ($i = 0; $i < $count; $i++) {
-                    if (json_decode($product->variations)[$i]->type == $str) {
-                        $price = json_decode($product->variations)[$i]->price;
-                    }
+            if ($details['variation']) {
+                foreach (json_decode($details['variation']) as $index => $variation) {
+                    $variations['Size'] = $variation->type;
+                    $data['choice_'.($index+1)] = $variation->type;
+                    $price += $variation->price;
                 }
             } else {
                 $price = $product->price;
             }
+
+            $data['variations'] = $variations;
+            $data['variant'] = json_decode($details['variant']);
 
             $data['quantity'] = $details['quantity'];
             $data['price'] = $price;
@@ -344,9 +328,24 @@ class POSController extends Controller
             $cart->push($data);
         }
 
+        $delivery_address = null;
+
+        if ($order->delivery_address_id) {
+            $delivery_address = CustomerAddress::query()->find($order->delivery_address_id);
+        }
+        if(!$delivery_address && $order->delivery_address) {
+            $delivery_address = json_decode(json_encode(str_replace('/','',$order->delivery_address)),true);
+        }
+
+        $delivery_address['delivery_charge'] = $order->delivery_charge;
+
         session()->put('customer_id', $order->user_id);
 
         session()->put('cart', $cart);
+
+        if ($delivery_address) {
+            return redirect()->back()->with('delivery_address', $delivery_address);
+        }
 
         return redirect()->back();
     }
@@ -525,7 +524,6 @@ class POSController extends Controller
             }
 
             $address = [
-                'user_id' => session()->get('customer_id') ?? null,
                 'contact_person_name' => $request->contact_person_name,
                 'contact_person_number' => $request->contact_person_number,
                 'floor' => $request->floor,
@@ -535,14 +533,13 @@ class POSController extends Controller
                 'address' => $request->address,
                 'longitude' => $request->longitude,
                 'latitude' => $request->latitude,
-                'created_at' => now(),
-                'updated_at' => now(),
             ];
 
             if ($request->get('customer_address_id')) {
                 $customer_address = CustomerAddress::find($request->get('customer_address_id'));
                 $customer_address->update($address);
             } else {
+                $address['user_id'] = $request->user_id;
                 $customer_address = CustomerAddress::create($address);
             }
 
@@ -563,7 +560,7 @@ class POSController extends Controller
         $order = new Order();
         $order->id = $order_id;
 
-        $order->user_id = session()->get('customer_id') ?? null;
+        $order->user_id = $request->user_id;
         $order->coupon_discount_title = $request->coupon_discount_title == 0 ? null : 'coupon_discount_title';
         $order->payment_status = $request->type == 'pay_after_eating' ? 'unpaid' : 'paid';
 
