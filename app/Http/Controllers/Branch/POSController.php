@@ -337,7 +337,7 @@ class POSController extends Controller
             $delivery_address = json_decode(json_encode(str_replace('/','',$order->delivery_address)),true);
         }
 
-        $delivery_address['delivery_charge'] = $order->delivery_charge;
+        $delivery_address->delivery_charge = $order->delivery_charge;
 
         session()->put('customer_id', $order->user_id);
         session()->put('branch_id', $order->branch_id);
