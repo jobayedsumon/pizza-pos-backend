@@ -30,15 +30,15 @@
         <label class="control-label">{{translate('Address_Line')}}
         <span class="text-danger">*</span>
         </label>
-        <input id="address" type="text" class="form-control" name="address" placeholder="23/A Block,Sector 4" value="{{ isset($delivery_address) ? $delivery_address->address : '' }}">
-        <input type="hidden" name="latitude" id="latitude" value="{{ isset($delivery_address) ? $delivery_address->latitude : '' }}">
-        <input type="hidden" name="longitude" id="longitude" value="{{ isset($delivery_address) ? $delivery_address->longitude : '' }}">
+        <input id="address" type="text" class="form-control" name="address" placeholder="23/A Block,Sector 4" value="{{ isset($delivery_address) ? $delivery_address['address'] : '' }}">
+        <input type="hidden" name="latitude" id="latitude" value="{{ isset($delivery_address) ? $delivery_address['latitude'] : '' }}">
+        <input type="hidden" name="longitude" id="longitude" value="{{ isset($delivery_address) ? $delivery_address['longitude'] : '' }}">
         <input type="hidden" name="distance" id="distance">
-        <input type="hidden" name="address_type" id="address_type" value="{{ isset($delivery_address) && $delivery_address->address_type ? $delivery_address->address_type : 'Others' }}">
+        <input type="hidden" name="address_type" id="address_type" value="{{ isset($delivery_address) && $delivery_address['address_type'] ? $delivery_address['address_type'] : 'Others' }}">
     </div>
     <div class="form-group">
         <label class="control-label">{{translate('Street_Number')}}</label>
-        <input id="road" type="text" class="form-control" name="road" placeholder="EX: 10th Street" value="{{ isset($delivery_address) ? $delivery_address->road : '' }}">
+        <input id="road" type="text" class="form-control" name="road" placeholder="EX: 10th Street" value="{{ isset($delivery_address) ? $delivery_address['road']: '' }}">
     </div>
     <div class="form-group">
         <label class="control-label">
@@ -46,10 +46,10 @@
         </label>
         <div class="row">
             <div class="col-md-6">
-                <input id="house" type="text" class="form-control" name="house" placeholder="EX: 02" value="{{ isset($delivery_address) ? $delivery_address->house : '' }}">
+                <input id="house" type="text" class="form-control" name="house" placeholder="EX: 02" value="{{ isset($delivery_address) ? $delivery_address['house'] : '' }}">
             </div>
             <div class="col-md-6">
-                <input id="floor" type="text" class="form-control" name="floor" placeholder="EX: 2B" value="{{ isset($delivery_address) ? $delivery_address->floor : '' }}">
+                <input id="floor" type="text" class="form-control" name="floor" placeholder="EX: 2B" value="{{ isset($delivery_address) ? $delivery_address['floor'] : '' }}">
             </div>
         </div>
     </div>
@@ -57,13 +57,13 @@
         <label class="control-label">{{translate('Contact_Person_Name')}}
             <span class="text-danger">*</span>
         </label>
-        <input id="contact_person_name" type="text" class="form-control" name="contact_person_name" placeholder="Enter contact person name" value="{{ isset($delivery_address) ? $delivery_address->contact_person_name : '' }}">
+        <input id="contact_person_name" type="text" class="form-control" name="contact_person_name" placeholder="Enter contact person name" value="{{ isset($delivery_address) ? $delivery_address['contact_person_name'] : '' }}">
     </div>
     <div class="form-group">
         <label class="control-label">{{translate('Contact_Person_Number')}}
             <span class="text-danger">*</span>
         </label>
-        <input id="contact_person_number" type="text" class="form-control" name="contact_person_number" placeholder="Enter contact person number" value="{{ isset($delivery_address) ? $delivery_address->contact_person_number : '' }}">
+        <input id="contact_person_number" type="text" class="form-control" name="contact_person_number" placeholder="Enter contact person number" value="{{ isset($delivery_address) ? $delivery_address['contact_person_number'] : '' }}">
     </div>
 </div>
 
@@ -91,9 +91,9 @@
     }
 
     var isDeliverySet = {{ isset($delivery_address) ? 1 : 0 }};
-    var addressId = {{ isset($delivery_address) ? $delivery_address->id : 0 }};
-    var latitude = {{ isset($delivery_address) ? $delivery_address->latitude : 0 }};
-    var longitude = {{ isset($delivery_address) ? $delivery_address->longitude : 0 }};
+    var addressId = {{ isset($delivery_address) ? $delivery_address['id'] : 0 }};
+    var latitude = {{ isset($delivery_address) ? $delivery_address['latitude'] : 0 }};
+    var longitude = {{ isset($delivery_address) ? $delivery_address['longitude'] : 0 }};
 
     google.maps.event.addDomListener(window, 'load', initialize);
 

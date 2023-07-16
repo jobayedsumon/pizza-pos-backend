@@ -19,8 +19,8 @@
 
         $branch = \App\Model\Branch::first();
         if (session()->get('delivery_address')) {
-            $delivery_address = json_decode(session()->get('delivery_address'));
-            $delivery_charge = $delivery_address->delivery_charge;
+            $delivery_address = session()->get('delivery_address');
+            $delivery_charge = $delivery_address['delivery_charge'];
         } else {
             $delivery_charge = \App\CentralLogics\Helpers::get_delivery_charge(0);
         }
