@@ -34,7 +34,7 @@
         <input type="hidden" name="latitude" id="latitude" value="{{ isset($delivery_address) ? $delivery_address->latitude : '' }}">
         <input type="hidden" name="longitude" id="longitude" value="{{ isset($delivery_address) ? $delivery_address->longitude : '' }}">
         <input type="hidden" name="distance" id="distance">
-        <input type="hidden" name="address_type" id="address_type" value="{{ isset($delivery_address) ? $delivery_address->address_type : '' }}">
+        <input type="hidden" name="address_type" id="address_type" value="{{ isset($delivery_address) && $delivery_address->address_type ? $delivery_address->address_type : 'Others' }}">
     </div>
     <div class="form-group">
         <label class="control-label">{{translate('Street_Number')}}</label>
@@ -166,7 +166,7 @@
             $('#latitude').val('');
             $('#longitude').val('');
             $('#distance').val('');
-            $('#address_type').val('');
+            $('#address_type').val('Others');
             $('#road').val('');
             $('#house').val('');
             $('#floor').val('');

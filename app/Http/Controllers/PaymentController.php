@@ -39,9 +39,9 @@ class PaymentController extends Controller
                 session()->put('product_ids', $data[1]);
             }
         }
-        
+
         if(isset($uuid)){ // regular/logged-in user
-        
+
             $user = User::query()->firstOrCreate([
                 'email' => session('email'),
                 'phone' => session('phone')
@@ -51,19 +51,20 @@ class PaymentController extends Controller
                 'email' => session('email'),
                 'phone' => session('phone')
             ]);
-            
+
             \DB::table('guest_order_uuids')->insert([
                 'user_id' => $user->id,
                 'order_uuid' => $uuid,
             ]);
 
             $customer = User::query()->find($user->id);
-            
+
         } elseif (session()->has('customer_id')) { // guest user
             $customer = User::query()->firstWhere(['id' => session('customer_id'), 'is_active' => 1]);
         }
-        
+
         $order_amount = session('order_amount');
+
         session()->put('customer_id',$customer->id);
 
         if (isset($customer) && isset($order_amount)) {

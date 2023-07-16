@@ -269,7 +269,7 @@
                                     <span class="badge-soft-info px-2 py-1 rounded">{{$order->branch?$order->branch->name:'Branch deleted!'}}</span>
                                 </td>
                                 <td>
-                                    <div>{{ \App\CentralLogics\Helpers::set_symbol($order['order_amount'] + $order['delivery_charge']) }}</div>
+                                    <div>{{ \App\CentralLogics\Helpers::set_symbol($order['order_amount']) }}</div>
                                     @if($order->payment_status=='paid')
                                         <span class="text-success">{{translate('paid')}}</span>
                                     @else

@@ -264,7 +264,7 @@
                                 </td>
                                 <td><span class="badge-soft-info px-2 py-1 rounded">{{$order->branch->name}}</span></td>
                                 <td>
-                                    <div>{{ \App\CentralLogics\Helpers::set_symbol($order['order_amount'] + $order['delivery_charge'])  }}</div>
+                                    <div>{{ \App\CentralLogics\Helpers::set_symbol($order['order_amount'])  }}</div>
 
                                     @if($order->payment_status=='paid')
                                         <span class="badge badge-soft-success">{{translate('paid')}}
