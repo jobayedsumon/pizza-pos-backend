@@ -353,7 +353,7 @@ class POSController extends Controller
 
     public function cart_items()
     {
-        return view('branch-views.pos._cart');
+        return view('branch-views.pos._cart_render');
     }
 
     public function emptyCart(Request $request)

@@ -71,7 +71,7 @@
     <script src="https://maps.googleapis.com/maps/api/js?key={{ \App\Model\BusinessSetting::where('key', 'map_api_key')->first()->value }}&libraries=places,geometry&v=3.51"></script>
 <script>
 
-    var customerAddressSelect = $.HSCore.components.HSSelect2.init($('#customer_address_id'));
+    $('#customer_address_id').select2()
 
     var lat1 = {{ $branch->latitude }};
     var lng1 = {{ $branch->longitude }};
@@ -175,7 +175,7 @@
 
         } else if(isDeliverySet) {
             if(addressId) {
-                customerAddressSelect.val(addressId).trigger('change');
+                $('#customer_address_id').val(addressId).trigger('change');
             }
             calculateDistance(latitude, longitude);
         }

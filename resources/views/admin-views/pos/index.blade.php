@@ -207,7 +207,7 @@
                                            placeholder="{{translate('Number Of People')}}">
                                 </div>
 
-                                <div class='w-100' id="cart">
+                                <div class='w-100'>
                                     @include('admin-views.pos._cart')
                                 </div>
                             </div>
@@ -607,8 +607,20 @@
         }
 
         function updateCart() {
+            var deliveryChargeHidden = $('.deliveryChargeInTable').hasClass('d-none');
+
+            if(!deliveryChargeHidden){
+                var deliveryCharge = $('#deliveryChargeInTableValue').text();
+            }
             $.post('<?php echo e(route('admin.pos.cart_items')); ?>', {_token: '<?php echo e(csrf_token()); ?>'}, function (data) {
                 $('#cart').empty().html(data);
+                if (!deliveryChargeHidden) {
+                    $('#deliveryChargeInTableValue').text(deliveryCharge);
+                    var currency = deliveryCharge.charAt(0);
+                    var total = parseFloat($('#posTotalValue').text().slice(1)) + parseFloat(deliveryCharge.slice(1))
+                    $('#posTotalValue').text(currency + total.toFixed(2));
+                    $('.deliveryChargeInTable').removeClass('d-none');
+                }
             });
         }
 
