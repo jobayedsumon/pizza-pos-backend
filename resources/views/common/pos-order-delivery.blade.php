@@ -91,9 +91,9 @@
     }
 
     var isDeliverySet = {{ isset($delivery_address) ? 1 : 0 }};
-    var addressId = {{ isset($delivery_address) ? @$delivery_address['id'] : 0 }};
-    var latitude = {{ isset($delivery_address) ? @$delivery_address['latitude'] : 0 }};
-    var longitude = {{ isset($delivery_address) ? @$delivery_address['longitude'] : 0 }};
+    var addressId = '{{ isset($delivery_address) ? @$delivery_address['id'] : 0 }}';
+    var latitude = '{{ isset($delivery_address) ? @$delivery_address['latitude'] : 0 }}';
+    var longitude = '{{ isset($delivery_address) ? @$delivery_address['longitude'] : 0 }}';
 
     google.maps.event.addDomListener(window, 'load', initialize);
 
