@@ -73,7 +73,11 @@ class POSController extends Controller
         $branch = Branch::query()->find(auth('branch')->id());
         $tables = Table::query()->where(['branch_id' => auth('branch')->id()])->get();
         $pos_role = AdminRole::where('name', 'pos')->first();
-        $employees = Admin::where('admin_role_id', $pos_role->id)->select('id', 'f_name')->get();
+        if ($pos_role) {
+            $employees = Admin::where('admin_role_id', $pos_role->id)->select('id', 'f_name')->get();
+        } else {
+            $employees = [];
+        }
         session()->forget('order_taken_by');
         return view('branch-views.pos.index', compact('categories', 'products', 'category', 'keyword', 'branch', 'tables', 'selected_table', 'selected_customer', 'employees'));
     }
@@ -842,8 +846,6 @@ class POSController extends Controller
     public function generate_invoice($id)
     {
         $order = Order::query()->where('id', $id)->first();
-
-        return view('branch-views.pos.order.invoice', compact('order'));
 
         return response()->json([
             'success' => 1,
