@@ -52,7 +52,7 @@
                         <td>
                             <div class="media align-items-center gap-10">
                                 <img class="avatar avatar-sm" src="{{asset('storage/app/public/product')}}/{{$cartItem['image']}}"
-                                     onerror="this.src='{{asset('public/assets/admin/img/160x160/img2.jpg')}}'" alt="{{$cartItem['name']}} image">
+                                     onerror="this.src='{{asset('public-assets/assets/admin/img/160x160/img2.jpg')}}'" alt="{{$cartItem['name']}} image">
                                 <div class="media-body">
                                     <h5 class="text-hover-primary mb-0">{{Str::limit($cartItem['name'], 10)}}</h5>
                                     <small>{{Str::limit($cartItem['variant'], 20)}}</small>
@@ -143,8 +143,8 @@ if($extra_discount) {
             - {{ \App\CentralLogics\Helpers::set_symbol($extra_discount) }}
         </dd>
 
-        <dt  class="col-6">{{translate('VAT/TAX:')}} : </dt>
-        <dd class="col-6 text-right">{{ \App\CentralLogics\Helpers::set_symbol(round($total_tax,2)) }}</dd>
+{{--        <dt  class="col-6">{{translate('VAT/TAX:')}} : </dt>--}}
+{{--        <dd class="col-6 text-right">{{ \App\CentralLogics\Helpers::set_symbol(round($total_tax,2)) }}</dd>--}}
 
         <dt  class="col-6 {{ session()->get('delivery_address') ? '' : 'd-none' }} deliveryChargeInTable pb-2">{{translate('delivery_charge')}} : </dt>
         <dd class="col-6 {{ session()->get('delivery_address') ? '' : 'd-none' }} text-right deliveryChargeInTable pb-2" id="deliveryChargeInTableValue">

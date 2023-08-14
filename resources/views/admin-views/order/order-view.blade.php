@@ -11,7 +11,7 @@
         <!-- Page Header -->
         <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
             <h2 class="h1 mb-0 d-flex align-items-center gap-1">
-                <img width="20" class="avatar-img" src="{{asset('public/assets/admin/img/icons/order_details.png')}}" alt="">
+                <img width="20" class="avatar-img" src="{{asset('public-assets/assets/admin/img/icons/order_details.png')}}" alt="">
                 <span class="page-header-title">
                     {{translate('Order_Details')}}
                 </span>
@@ -62,6 +62,8 @@
                                         {{translate('Order_Date_&_Time')}}: <i class="tio-date-range"></i>{{date('d M Y',strtotime($order['created_at']))}} {{ date(config('time_format'), strtotime($order['created_at'])) }}
                                     </div>
                                 </div>
+
+                                <h5 class="text-nowrap">Order Taken By: {{ @$order->taken_by->f_name }}</h5>
 
                                 <h5>{{translate('order')}} {{translate('note')}} : {{$order['order_note']}}</h5>
                             </div>
@@ -171,7 +173,7 @@
                                 <th>{{translate('Item Details')}}</th>
                                 <th>{{translate('Price')}}</th>
                                 <th>{{translate('Discount')}}</th>
-                                <th>{{translate('Tax')}}</th>
+{{--                                <th>{{translate('Tax')}}</th>--}}
                                 <th class="text-right">{{translate('Total_price')}}</th>
                             </tr>
                             </thead>
@@ -194,7 +196,7 @@
 
                                             <img class="img-fluid avatar avatar-lg"
                                                  src="{{asset('storage/app/public/product/')}}/{{$detail->product['image']}}"
-                                                 onerror="this.src='{{asset('public/assets/admin/img/160x160/img2.jpg')}}'"
+                                                 onerror="this.src='{{asset('public-assets/assets/admin/img/160x160/img2.jpg')}}'"
                                                  alt="Image Description">
 
                                             <div class="media-body text-dark fz-12">
@@ -227,6 +229,7 @@
                                                     @endif
                                                     <br>
                                                     @php($addon_ids = json_decode($detail['add_on_ids'],true))
+                                                    @php($addonSubtotal=0)
                                                     @if ($addon_ids)
                                                     <span>
                                                         <u><strong>{{translate('addons')}}</strong></u>
@@ -236,9 +239,10 @@
                                                             <div class="font-size-sm text-body">
                                                                     <span>{{$addon['name']}} :  </span>
                                                                     <span class="font-weight-semibold">
-                                                                        {{$add_on_qty}} x {{ \App\CentralLogics\Helpers::set_symbol($addon['price']) }}
+                                                                        {{$add_on_qty}}
                                                                     </span>
                                                                 </div>
+                                                            @php($addonSubtotal+=$addon['price']*$add_on_qty)
                                                             @php($add_ons_cost+=$addon['price']*$add_on_qty)
                                                         @endforeach
                                                     </span>
@@ -262,28 +266,32 @@
 
                                                 <div class="d-flex gap-2">
                                                     <span class="">{{translate('Qty')}} :  </span>
-                                                    <span>{{$detail['quantity']}}</span>
+                                                    @if($detail['quantity'] == 0.5)
+                                                        <span>Half / Half</span>
+                                                    @else
+                                                        <span>{{ intval($detail['quantity']) }}</span>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </div>
                                     </td>
                                     <td>
-                                        @php($amount=$detail['price']*$detail['quantity'])
+                                        @php($amount=($detail['price']*$detail['quantity']) + $addonSubtotal)
                                         {{\App\CentralLogics\Helpers::set_symbol($amount)}}
                                     </td>
                                     <td>
                                         @php($tot_discount = $detail['discount_on_product']*$detail['quantity'])
                                         {{\App\CentralLogics\Helpers::set_symbol($tot_discount)}}
                                     </td>
-                                    <td>
-                                        @php($product_tax = $detail['tax_amount']*$detail['quantity'])
-                                        {{\App\CentralLogics\Helpers::set_symbol($product_tax)}}
-                                    </td>
-                                    <td class="text-right">{{\App\CentralLogics\Helpers::set_symbol($amount-$tot_discount + $product_tax)}}</td>
+{{--                                    <td>--}}
+{{--                                        @php($product_tax = $detail['tax_amount']*$detail['quantity'])--}}
+{{--                                        {{\App\CentralLogics\Helpers::set_symbol($product_tax)}}--}}
+{{--                                    </td>--}}
+                                    <td class="text-right">{{\App\CentralLogics\Helpers::set_symbol($amount-$tot_discount)}}</td>
                                 </tr>
                                 @php($total_dis_on_pro += $tot_discount)
                                 @php($sub_total += $amount)
-                                @php($total_tax += $product_tax)
+{{--                                @php($total_tax += $product_tax)--}}
 
                             @endforeach
                             </tbody>
@@ -303,24 +311,24 @@
                                     </dt>
                                     <dd class="col-6 text-dark text-right">{{ \App\CentralLogics\Helpers::set_symbol($sub_total) }}</dd>
 
-                                    <dt class="col-6">
-                                        <div class="d-flex max-w220 ml-auto">
-                                            <span>{{translate('tax')}} / {{translate('vat')}}</span>
-                                            <span>:</span>
-                                        </div>
-                                    </dt>
-                                    <dd class="col-6 text-dark text-right">{{ \App\CentralLogics\Helpers::set_symbol($total_tax) }}</dd>
+{{--                                    <dt class="col-6">--}}
+{{--                                        <div class="d-flex max-w220 ml-auto">--}}
+{{--                                            <span>{{translate('tax')}} / {{translate('vat')}}</span>--}}
+{{--                                            <span>:</span>--}}
+{{--                                        </div>--}}
+{{--                                    </dt>--}}
+{{--                                    <dd class="col-6 text-dark text-right">{{ \App\CentralLogics\Helpers::set_symbol($total_tax) }}</dd>--}}
 
-                                    <dt class="col-6">
+{{--                                    <dt class="col-6">--}}
 
-                                        <div class="d-flex max-w220 ml-auto">
-                                            <span>{{translate('addon')}} {{translate('cost')}}</span>
-                                            <span>:</span>
-                                        </div>
-                                    </dt>
-                                    <dd class="col-6 text-dark text-right">
-                                        {{ \App\CentralLogics\Helpers::set_symbol($add_ons_cost) }}
-                                    </dd>
+{{--                                        <div class="d-flex max-w220 ml-auto">--}}
+{{--                                            <span>{{translate('addon')}} {{translate('cost')}}</span>--}}
+{{--                                            <span>:</span>--}}
+{{--                                        </div>--}}
+{{--                                    </dt>--}}
+{{--                                    <dd class="col-6 text-dark text-right">--}}
+{{--                                        {{ \App\CentralLogics\Helpers::set_symbol($add_ons_cost) }}--}}
+{{--                                    </dd>--}}
 
                                     <dt class="col-6">
                                         <div class="d-flex max-w220 ml-auto">
@@ -338,7 +346,7 @@
                                         </div>
                                     </dt>
                                     <dd class="col-6 text-dark text-right">
-                                        {{ \App\CentralLogics\Helpers::set_symbol($sub_total =$sub_total+$total_tax+$add_ons_cost-$total_dis_on_pro) }}</dd>
+                                        {{ \App\CentralLogics\Helpers::set_symbol($sub_total =$sub_total+$total_tax-$total_dis_on_pro) }}</dd>
 
                                     <dt class="col-6">
 
@@ -442,7 +450,7 @@
                             @if($order['order_type']!='take_away' && $order['order_type'] != 'pos' && $order['order_type'] != 'dine_in' && !$order['delivery_man_id'])
 
                                 <a href="#" class="btn btn-primary btn-block d-flex gap-1 justify-content-center align-items-center" data-toggle="modal" data-target="#assignDeliveryMan">
-                                    <img width="17" src="{{asset('public/assets/admin/img/icons/assain_delivery_man.png')}}" alt="">
+                                    <img width="17" src="{{asset('public-assets/assets/admin/img/icons/assain_delivery_man.png')}}" alt="">
                                     {{translate('Assign_Delivery_Man')}}
                                 </a>
                             @endif
@@ -477,7 +485,7 @@
                                         </h4>
                                         <div class="media flex-wrap gap-3">
                                             <a target="_blank" class="" href="{{route('admin.customer.view',[$order->customer['id']])}}">
-                                                <img class="avatar avatar-lg rounded-circle" src="{{asset('storage/app/public/delivery-man/'.$order->delivery_man->image)}}" onerror="this.src='{{asset('public/assets/admin/img/160x160/img1.jpg')}}'" alt="Image">
+                                                <img class="avatar avatar-lg rounded-circle" src="{{asset('storage/app/public/delivery-man/'.$order->delivery_man->image)}}" onerror="this.src='{{asset('public-assets/assets/admin/img/160x160/img1.jpg')}}'" alt="Image">
                                             </a>
                                             <div class="media-body d-flex flex-column gap-1">
                                                 <a target="" href="#" class="text-dark"><span>{{$order->delivery_man['f_name'].' '.$order->delivery_man['l_name'] ?? ''}}</span></a>
@@ -503,19 +511,19 @@
                                                 <a target="_blank" class="text-dark"
                                                    title="Delivery Boy Last Location" data-toggle="tooltip" data-placement="top"
                                                    href="http://maps.google.com/maps?z=12&t=m&q=loc:{{$current['latitude']}}+{{$current['longitude']}}">
-                                                    <img width="13" src="{{asset('public/assets/admin/img/icons/location.png')}}" alt="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{$current['location']?? ''}}
+                                                    <img width="13" src="{{asset('public-assets/assets/admin/img/icons/location.png')}}" alt="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{$current['location']?? ''}}
                                                 </a>
                                             @else
                                                 <a href="javascript:" data-toggle="tooltip" class="text-dark"
                                                    data-placement="top" title="{{translate('Waiting for location...')}}">
-                                                    <img width="13" src="{{asset('public/assets/admin/img/icons/location.png')}}" alt="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{translate('Waiting for location...')}}
+                                                    <img width="13" src="{{asset('public-assets/assets/admin/img/icons/location.png')}}" alt="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{translate('Waiting for location...')}}
                                                 </a>
                                             @endif
                                         @else
                                             <a href="javascript:" onclick="last_location_view()" class="text-dark"
                                                data-toggle="tooltip" data-placement="top"
                                                title="{{translate('Only available when order is out for delivery!')}}">
-                                                <img width="13" src="{{asset('public/assets/admin/img/icons/location.png')}}" alt="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{translate('Only available when order is out for delivery!')}}
+                                                <img width="13" src="{{asset('public-assets/assets/admin/img/icons/location.png')}}" alt="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{translate('Only available when order is out for delivery!')}}
                                             </a>
                                         @endif
                                     </div>
@@ -533,7 +541,7 @@
                                         </h4>
 
                                         <div class="edit-btn cursor-pointer" data-toggle="modal" data-target="#deliveryInfoModal">
-                                            {{-- <img width="24" src="{{asset('public/assets/admin/img/icons/edit.png')}}" alt=""> --}}
+                                            {{-- <img width="24" src="{{asset('public-assets/assets/admin/img/icons/edit.png')}}" alt=""> --}}
                                             <i class="tio-edit"></i>
                                         </div>
                                     </div>
@@ -544,11 +552,11 @@
                                         @endif
                                         <div class="d-flex">
                                             <div class="name">{{ translate('Name') }}</div>
-                                            <div class="info">{{ $address? $address['contact_person_name']: '' }}</div>
+                                            <div class="info">{{ $address? @$address['contact_person_name']: '' }}</div>
                                         </div>
                                         <div class="d-flex">
                                             <div class="name">{{translate('Contact')}}</div>
-                                            <a href="tel:{{ $address? $address['contact_person_number']: '' }}" class="info">{{ $address? $address['contact_person_number']: '' }}</a>
+                                            <a href="tel:{{ $address? @$address['contact_person_number']: '' }}" class="info">{{ $address? @$address['contact_person_number']: '' }}</a>
                                         </div>
                                         <div class="d-flex">
                                             <div class="name">{{translate('floor')}}</div>
@@ -567,13 +575,13 @@
                                             @if(isset($address['address']) && isset($address['latitude']) && isset($address['longitude']))
                                             <a target="_blank" class="text-dark"
                                                href="http://maps.google.com/maps?z=12&t=m&q=loc:{{$address['latitude']}}+{{$address['longitude']}}">
-                                                <img width="13" src="{{asset('public/assets/admin/img/icons/location.png')}}" alt="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                <img width="13" src="{{asset('public-assets/assets/admin/img/icons/location.png')}}" alt="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                                 {{$address['address']}}
                                             </a>
                                             @else
                                             <a target="_blank" class="text-dark"
                                                href="#">
-                                                <img width="13" src="{{asset('public/assets/admin/img/icons/location.png')}}" alt="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                <img width="13" src="{{asset('public-assets/assets/admin/img/icons/location.png')}}" alt="">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                                 {{translate('no_location_found')}}
                                             </a>
                                             @endif
@@ -596,7 +604,7 @@
                             </h4>
                             <div class="media flex-wrap gap-3">
                                 <a target="_blank" class="" href="{{route('admin.customer.view',[$order->customer['id']])}}">
-                                    <img class="avatar avatar-lg rounded-circle" src="{{asset('storage/app/public/profile/'.$order->customer['image'])}}" onerror="this.src='{{asset('public/assets/admin/img/160x160/img1.jpg')}}'" alt="Image">
+                                    <img class="avatar avatar-lg rounded-circle" src="{{asset('storage/app/public/profile/'.$order->customer['image'])}}" onerror="this.src='{{asset('public-assets/assets/admin/img/160x160/img1.jpg')}}'" alt="Image">
                                 </a>
                                 <div class="media-body d-flex flex-column gap-1">
                                     <a target="_blank" href="{{route('admin.customer.view',[$order->customer['id']])}}" class="text-dark"><strong>{{$order->customer['f_name'].' '.$order->customer['l_name']}}</strong></a>
@@ -616,7 +624,7 @@
                                 </h4>
                                 <div class="media flex-wrap gap-3 align-items-center">
                                     <a target="#" class="" >
-                                        <img class="avatar avatar-lg rounded-circle" src="{{asset('public/assets/admin/img/160x160/img1.jpg')}}" alt="Image">
+                                        <img class="avatar avatar-lg rounded-circle" src="{{asset('public-assets/assets/admin/img/160x160/img1.jpg')}}" alt="Image">
                                     </a>
                                     <div class="media-body d-flex flex-column gap-1">
                                         <a target="#"  class="text-dark text-capitalize"><strong>{{translate('walking_customer')}}</strong></a>
@@ -633,7 +641,7 @@
                             </h4>
                             <div class="media flex-wrap gap-3">
                                 <div class="">
-                                    <img class="avatar avatar-lg rounded-circle" src="{{asset('storage/app/public/branch/'.$order->branch['image'])}}" onerror="this.src='{{asset('public/assets/admin/img/160x160/img1.jpg')}}'" alt="Image">
+                                    <img class="avatar avatar-lg rounded-circle" src="{{asset('storage/app/public/branch/'.$order->branch['image'])}}" onerror="this.src='{{asset('public-assets/assets/admin/img/160x160/img1.jpg')}}'" alt="Image">
                                 </div>
                                 <div class="media-body d-flex flex-column gap-1">
                                     <span class="text-dark"><span>{{$order->branch['name']}}</span></span>
@@ -653,7 +661,7 @@
 
                             <hr class="w-100">
                             <div class="d-flex align-items-center text-dark gap-3">
-                                <img width="13" src="{{asset('public/assets/admin/img/icons/location.png')}}" alt="">
+                                <img width="13" src="{{asset('public-assets/assets/admin/img/icons/location.png')}}" alt="">
                                 <a target="_blank" class="text-dark"
                                     href="http://maps.google.com/maps?z=12&t=m&q=loc:{{$order->branch['latitude']}}+{{$order->branch['longitude']}}">
                                     {{$order->branch['address']}}<br>
@@ -685,7 +693,7 @@
                                 <div class="media align-items-center gap-2 flex-wrap">
                                     <div class="avatar">
                                         <img class="img-fit rounded-circle" loading="lazy" decoding="async"
-                                         onerror="this.src='{{asset('public/assets/admin/img/160x160/img1.jpg')}}'"
+                                         onerror="this.src='{{asset('public-assets/assets/admin/img/160x160/img1.jpg')}}'"
                                          src="{{asset('/storage/app/public/delivery-man/'.$deliveryMan->image)}}" alt="Jhon Doe">
                                     </div>
                                     <span>{{$deliveryMan['f_name'].' '.$deliveryMan['l_name']}}</span>

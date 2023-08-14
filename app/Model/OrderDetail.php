@@ -11,7 +11,7 @@ class OrderDetail extends Model
         'order_id' => 'integer',
         'price' => 'float',
         'discount_on_product' => 'float',
-        'quantity' => 'integer',
+        'quantity' => 'decimal:1',
         'tax_amount' => 'float',
         'created_at' => 'datetime',
         'updated_at' => 'datetime'

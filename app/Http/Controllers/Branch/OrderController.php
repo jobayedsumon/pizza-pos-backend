@@ -94,8 +94,8 @@ class OrderController extends Controller
 
     public function orders_modal($status, Request $request)
     {
-        $from = $request['from'];
-        $to = $request['to'];
+        $from = $request['from'] ?? date('Y-m-d');
+        $to = $request['to'] ?? date('Y-m-d');
 
         /*Order::where(['checked' => 0, 'branch_id' => auth('branch')->id()])->update(['checked' => 1]);*/
         if ($status == 'all') {
@@ -103,7 +103,11 @@ class OrderController extends Controller
         } elseif ($status == 'schedule') {
             $orders = Order::query()->whereDate('delivery_date','>', \Carbon\Carbon::now()->format('Y-m-d'))
                 ->where(['branch_id' => auth('branch')->id()]);
-        } else {
+        } elseif ($status == 'pay_pickup') {
+            $orders = Order::with(['customer'])->where('order_status', 'pending')
+                ->where('payment_status', 'unpaid')->where(['branch_id' => auth('branch')->id()]);
+        }
+        else {
             $orders = Order::with(['customer'])
                 ->where(['order_status' => $status, 'branch_id' => auth('branch')->id()])
                 ->whereDate('delivery_date','<=',\Carbon\Carbon::now()->format('Y-m-d'));
@@ -129,21 +133,27 @@ class OrderController extends Controller
             $query_param = ['search' => $request['search']];
         }
 
-        if ($request->from || $request->to) {
-            if($request->from && !$request->to){
-                $orders->whereBetween('created_at',[$request->from.' 00:00:00',date('Y-m-d').' 23:59:59']);
-                $query_param = ['from' => $request['from']];
-            } elseif (!$request->from && $request->to){
-                $orders->whereBetween('created_at',['1970-01-01 00:00:00',$request->to.' 23:59:59']);
-                $query_param = ['to' => $request['to']];
-            } else {
-                $orders->whereBetween('created_at',[$request->from.' 00:00:00',$request->to.' 23:59:59']);
-                $query_param = [
-                    'from' => $request['from'],
-                    'to' => $request['to'],
-                ];
-            }
-        }
+//        if ($request->from || $request->to) {
+//            if($request->from && !$request->to){
+//                $orders->whereBetween('created_at',[$request->from.' 00:00:00',date('Y-m-d').' 23:59:59']);
+//                $query_param = ['from' => $request['from']];
+//            } elseif (!$request->from && $request->to){
+//                $orders->whereBetween('created_at',['1970-01-01 00:00:00',$request->to.' 23:59:59']);
+//                $query_param = ['to' => $request['to']];
+//            } else {
+//                $orders->whereBetween('created_at',[$request->from.' 00:00:00',$request->to.' 23:59:59']);
+//                $query_param = [
+//                    'from' => $request['from'],
+//                    'to' => $request['to'],
+//                ];
+//            }
+//        }
+
+        $orders->whereBetween('created_at',[$from.' 00:00:00',$to.' 23:59:59']);
+        $query_param = [
+            'from' => $from,
+            'to' => $to,
+        ];
 
         $order_count = [
             'pending' =>    Order::query()->notPos()->notSchedule()->where(['order_status'=>'pending','branch_id'=>auth('branch')->id()])
@@ -180,7 +190,13 @@ class OrderController extends Controller
                 })->count(),
         ];
 
-        $orders = $orders->notPos()->notDineIn()->latest()/*->paginate(Helpers::getPagination())*/->take(200)->get();
+        if ($status == 'pay_pickup') {
+            $orders = $orders->notDineIn()->latest()/*->paginate(Helpers::getPagination())*/->take(200)->get();
+        } else {
+            $orders = $orders->notPos()->notDineIn()->latest()/*->paginate(Helpers::getPagination())*/->take(200)->get();
+        }
+
+
         session()->put('order_data_export', $orders);
 
         return view('branch-views.order.partials.modal_table', compact('orders', 'status', 'search', 'from', 'to', 'order_count'));
@@ -188,8 +204,8 @@ class OrderController extends Controller
 
     public function orders_modal_customer(Request $request)
     {
-        $from = $request['from'];
-        $to = $request['to'];
+        $from = $request['from'] ?? date('Y-m-d');
+        $to = $request['to'] ?? date('Y-m-d');
         $status = 'customer';
 
         /*Order::where(['checked' => 0, 'branch_id' => auth('branch')->id()])->update(['checked' => 1]);*/
@@ -216,21 +232,23 @@ class OrderController extends Controller
             $query_param = ['search' => $request['search']];
         }
 
-        if ($request->from || $request->to) {
-            if($request->from && !$request->to){
-                $orders->whereBetween('created_at',[$request->from.' 00:00:00',date('Y-m-d').' 23:59:59']);
-                $query_param = ['from' => $request['from']];
-            } elseif (!$request->from && $request->to){
-                $orders->whereBetween('created_at',['1970-01-01 00:00:00',$request->to.' 23:59:59']);
-                $query_param = ['to' => $request['to']];
-            } else {
-                $orders->whereBetween('created_at',[$request->from.' 00:00:00',$request->to.' 23:59:59']);
-                $query_param = [
-                    'from' => $request['from'],
-                    'to' => $request['to'],
-                ];
-            }
-        }
+//        if ($request->from || $request->to) {
+//            if($request->from && !$request->to){
+//                $orders->whereBetween('created_at',[$request->from.' 00:00:00',date('Y-m-d').' 23:59:59']);
+//                $query_param = ['from' => $request['from']];
+//            } elseif (!$request->from && $request->to){
+//                $orders->whereBetween('created_at',['1970-01-01 00:00:00',$request->to.' 23:59:59']);
+//                $query_param = ['to' => $request['to']];
+//            } else {
+//                $orders->whereBetween('created_at',[$request->from.' 00:00:00',$request->to.' 23:59:59']);
+//                $query_param = [
+//                    'from' => $request['from'],
+//                    'to' => $request['to'],
+//                ];
+//            }
+//        }
+
+        $orders->whereBetween('created_at',[$from.' 00:00:00',$to.' 23:59:59']);
 
         $order_count = [
             'pending' =>    Order::query()->notPos()->notSchedule()->where(['order_status'=>'pending','branch_id'=>auth('branch')->id()])
@@ -267,7 +285,12 @@ class OrderController extends Controller
                 })->count(),
         ];
 
-        $orders = $orders->notPos()->notDineIn()->latest()/*->paginate(Helpers::getPagination())*/->take(200)->get();
+        if ($status == 'customer') {
+            $orders = $orders->latest()/*->paginate(Helpers::getPagination())*/->take(200)->get();
+        } else {
+            $orders = $orders->notPos()->notDineIn()->latest()/*->paginate(Helpers::getPagination())*/->take(200)->get();
+        }
+
         session()->put('order_data_export', $orders);
 
         return view('branch-views.order.partials.modal_table', compact('orders', 'status', 'search', 'from', 'to', 'order_count'));

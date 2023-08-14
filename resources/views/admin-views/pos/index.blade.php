@@ -13,7 +13,7 @@
             <div class="col-md-12">
                 <div id="loading" class="d--none">
                     <div class="loading-inner">
-                        <img width="200" src="{{asset('public/assets/admin/img/loader.gif')}}">
+                        <img width="200" src="{{asset('public-assets/assets/admin/img/loader.gif')}}">
                     </div>
                 </div>
             </div>
@@ -31,7 +31,7 @@
                         @php($restaurant_logo=\App\Model\BusinessSetting::where(['key'=>'logo'])->first()->value)
                         <img class="navbar-brand-logo rounded-circle avatar avatar-lg"
                              style="border: 5px solid #80808012"
-                             onerror="this.src='{{asset('public/assets/admin/img/160x160/img1.jpg')}}'"
+                             onerror="this.src='{{asset('public-assets/assets/admin/img/160x160/img1.jpg')}}'"
                              src="{{asset('storage/app/public/restaurant/'.$restaurant_logo)}}"
                              alt="Logo">
                     </a>
@@ -60,7 +60,7 @@
                                     <div class="avatar avatar-sm avatar-circle">
                                         @php($restaurant_logo=\App\Model\BusinessSetting::where(['key'=>'logo'])->first()->value)
                                         <img class="avatar-img"
-                                             onerror="this.src='{{asset('public/assets/admin/img/160x160/img1.jpg')}}'"
+                                             onerror="this.src='{{asset('public-assets/assets/admin/img/160x160/img1.jpg')}}'"
                                              src="{{asset('storage/app/public/admin')}}/{{auth('admin')->user()->image}}"
                                              alt="Image">
                                         <span class="avatar-status avatar-sm-status avatar-status-success"></span>
@@ -73,7 +73,7 @@
                                         <div class="media align-items-center">
                                             <div class="avatar avatar-sm avatar-circle mr-2">
                                                 <img class="avatar-img"
-                                                     onerror="this.src='{{asset('public/assets/admin/img/160x160/img1.jpg')}}'"
+                                                     onerror="this.src='{{asset('public-assets/assets/admin/img/160x160/img1.jpg')}}'"
                                                      src="{{asset('storage/app/public/admin')}}/{{auth('admin')->user()->image}}"
                                                      alt="Owner image">
                                             </div>
@@ -142,7 +142,7 @@
                                             <div class="input-group-prepend pl-2">
                                                 <div class="input-group-text">
                                                     <!-- <i class="tio-search"></i> -->
-                                                    <img width="13" src="{{asset('public/assets/admin/img/icons/search.png')}}" alt="">
+                                                    <img width="13" src="{{asset('public-assets/assets/admin/img/icons/search.png')}}" alt="">
                                                 </div>
                                             </div>
                                             <input id="datatableSearch" type="search" value="{{$keyword?$keyword:''}}" name="search" class="form-control border-0" placeholder="{{translate('Search here')}}" aria-label="Search here">
@@ -176,7 +176,21 @@
                             </div>
                             <!-- End POS Title -->
 
+                            <div class="px-2 pt-2 px-sm-4 pt-sm-2">
+                                <label for="">Order Taken By</label>
+                                <select
+                                    onchange="store_key('order_taken_by', this.value)" id='order_taken_by' name="order_taken_by" data-placeholder="{{translate('Select Your Name')}}" class="form-control"
+                                >
+                                    <option selected disabled>{{translate('Select Your Name')}}</option>
+                                    @forelse($employees as $employee)
+                                        <option value="{{ $employee->id }}" {{ $employee->id == session('order_taken_by') ? 'selected' : ''}}>{{ $employee->f_name }}</option>
+                                    @empty
+                                    @endforelse
+                                </select>
+                            </div>
+
                             <div class="p-2 p-sm-4">
+                                <small>For new number put 0 first and total 10 digits to auto save.</small>
                                 <div class="form-group d-flex gap-2 mb-3">
                                     <select onchange="changeCustomerId(this.value)" id='customer' name="customer_id" data-placeholder="{{translate('Walk_In_Customer')}}" class="js-data-example-ajax form-control form-ellipsis"></select>
                                     <button class="btn btn-success rounded text-nowrap" id="add_new_customer" type="button" data-toggle="modal" data-target="#add-customer" title="Add Customer">
@@ -242,32 +256,32 @@
                                 <div class="col-12 col-lg-6">
                                     <div class="form-group">
                                         <label class="input-label">
-                                            {{translate('First_Name')}}
+                                            {{translate('Name')}}
                                             <span class="input-label-secondary text-danger">*</span>
                                         </label>
                                         <input type="text" name="f_name" class="form-control" value="" placeholder="First name" required="">
                                     </div>
                                 </div>
-                                <div class="col-12 col-lg-6">
-                                    <div class="form-group">
-                                        <label class="input-label">
-                                            {{translate('Last_Name')}}
-                                            <span class="input-label-secondary text-danger">*</span>
-                                        </label>
-                                        <input type="text" name="l_name" class="form-control" value="" placeholder="Last name" required="">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row pl-2">
-                                <div class="col-12 col-lg-6">
-                                    <div class="form-group">
-                                        <label class="input-label">
-                                            {{translate('Email')}}
-                                            <span class="input-label-secondary"></span>
-                                        </label>
-                                        <input type="email" name="email" class="form-control" value="" placeholder="Ex : ex@example.com">
-                                    </div>
-                                </div>
+{{--                                <div class="col-12 col-lg-6">--}}
+{{--                                    <div class="form-group">--}}
+{{--                                        <label class="input-label">--}}
+{{--                                            {{translate('Last_Name')}}--}}
+{{--                                            <span class="input-label-secondary text-danger">*</span>--}}
+{{--                                        </label>--}}
+{{--                                        <input type="text" name="l_name" class="form-control" value="" placeholder="Last name" required="">--}}
+{{--                                    </div>--}}
+{{--                                </div>--}}
+{{--                            </div>--}}
+{{--                            <div class="row pl-2">--}}
+{{--                                <div class="col-12 col-lg-6">--}}
+{{--                                    <div class="form-group">--}}
+{{--                                        <label class="input-label">--}}
+{{--                                            {{translate('Email')}}--}}
+{{--                                            <span class="input-label-secondary"></span>--}}
+{{--                                        </label>--}}
+{{--                                        <input type="email" name="email" class="form-control" value="" placeholder="Ex : ex@example.com">--}}
+{{--                                    </div>--}}
+{{--                                </div>--}}
                                 <div class="col-12 col-lg-6">
                                     <div class="form-group">
                                         <label class="input-label">
@@ -326,10 +340,10 @@
 @push('script_2')
     <!-- JS Implementing Plugins -->
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
-    <script src="{{asset('public/assets/admin')}}/js/vendor.min.js"></script>
-    <script src="{{asset('public/assets/admin')}}/js/theme.min.js"></script>
-    <script src="{{asset('public/assets/admin')}}/js/sweet_alert.js"></script>
-    <script src="{{asset('public/assets/admin')}}/js/toastr.js"></script>
+    <script src="{{asset('public-assets/assets/admin')}}/js/vendor.min.js"></script>
+    <script src="{{asset('public-assets/assets/admin')}}/js/theme.min.js"></script>
+    <script src="{{asset('public-assets/assets/admin')}}/js/sweet_alert.js"></script>
+    <script src="{{asset('public-assets/assets/admin')}}/js/toastr.js"></script>
     {{--{!! Toastr::message() !!}--}}
 
     @if ($errors->any())
@@ -345,6 +359,9 @@
 
     <!-- JS Plugins Init. -->
     <script>
+
+        $('#order_taken_by').select2();
+
         $(document).on('ready', function () {
             @if($order)
             $('#print-invoice').modal('show');
@@ -721,6 +738,8 @@
             if($('#customer').val())
             {
                 $(this).append('<input type="hidden" name="user_id" value="'+$('#customer').val()+'" /> ');
+            }
+            if ($('#branch').val()) {
                 $(this).append('<input type="hidden" name="branch_id" value="'+$('#branch').val()+'" /> ');
             }
             return true;
@@ -835,7 +854,7 @@
     </script>
     <!-- IE Support -->
     <script>
-        if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) document.write('<script src="{{asset('public/assets/admin')}}/vendor/babel-polyfill/polyfill.min.js"><\/script>');
+        if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) document.write('<script src="{{asset('public-assets/assets/admin')}}/vendor/babel-polyfill/polyfill.min.js"><\/script>');
     </script>
 
 @endpush

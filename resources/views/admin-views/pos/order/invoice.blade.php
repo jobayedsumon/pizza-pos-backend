@@ -116,8 +116,8 @@
             <dl class="row text-right" style="color: black!important;">
                 <dt class="col-8">{{translate('Items Price')}}:</dt>
                 <dd class="col-4">{{\App\CentralLogics\Helpers::set_symbol($item_price)}}</dd>
-                <dt class="col-8">{{translate('Tax')}} / {{translate('VAT')}}:</dt>
-                <dd class="col-4">{{\App\CentralLogics\Helpers::set_symbol($total_tax)}}</dd>
+{{--                <dt class="col-8">{{translate('Tax')}} / {{translate('VAT')}}:</dt>--}}
+{{--                <dd class="col-4">{{\App\CentralLogics\Helpers::set_symbol($total_tax)}}</dd>--}}
                 <dt class="col-8">{{translate('Addon Cost')}}:</dt>
                 <dd class="col-4">{{\App\CentralLogics\Helpers::set_symbol($add_ons_cost)}}
                     <hr>

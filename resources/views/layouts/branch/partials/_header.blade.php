@@ -1,21 +1,112 @@
-<div id="headerMain" class="d-none">
+<div id="headerMain" class="mb-10">
     <header id="header" class="navbar justify-content-between navbar-fixed navbar-height navbar-flush navbar-container navbar-bordered">
 
-        <div class="d-flex justify-content-around">
+{{--        <div class="d-flex justify-content-around">--}}
 
-            <!-- Navbar Vertical Toggle -->
-            <button type="button" class="js-navbar-vertical-aside-toggle-invoker close mr-3 d-flex align-items-center">
-                {{--<i class="tio-first-page navbar-vertical-aside-toggle-short-align" data-toggle="tooltip"
-                   data-placement="right" title="Collapse"></i>--}}
-                <i class="tio-category-outlined navbar-vertical-aside-toggle-full-align"
-                   data-template='<div class="tooltip d-none d-sm-block" role="tooltip"><div class="arrow"></div><div class="tooltip-inner"></div></div>'
-                   data-toggle="tooltip" data-placement="right" title="Expand">
-                    <span style="font-family: 'Roboto', sans-serif;">{{translate('Category')}}</span>
-                </i>
-            </button>
-            <!-- End Navbar Vertical Toggle -->
+{{--            <!-- Navbar Vertical Toggle -->--}}
+{{--            <button type="button" class="js-navbar-vertical-aside-toggle-invoker close mr-3 d-flex align-items-center">--}}
+{{--                --}}{{----}}{{--<i class="tio-first-page navbar-vertical-aside-toggle-short-align" data-toggle="tooltip"--}}
+{{--                   data-placement="right" title="Collapse"></i>--}}
+{{--                <i class="tio-category-outlined navbar-vertical-aside-toggle-full-align"--}}
+{{--                   data-template='<div class="tooltip d-none d-sm-block" role="tooltip"><div class="arrow"></div><div class="tooltip-inner"></div></div>'--}}
+{{--                   data-toggle="tooltip" data-placement="right" title="Expand">--}}
+{{--                    <span style="font-family: 'Roboto', sans-serif;">{{translate('Category')}}</span>--}}
+{{--                </i>--}}
+{{--            </button>--}}
+{{--            <!-- End Navbar Vertical Toggle -->--}}
 
+{{--            <!-- End Navbar -->--}}
+{{--        </div>--}}
+
+        <div class="d-flex">
             <div class="navbar-nav align-items-center flex-row">
+
+                <div class="nav-item ml-4">
+                    <!-- Account -->
+                    <div class="hs-unfold">
+                        <a class="js-hs-unfold-invoker navbar-dropdown-account-wrapper media gap-2" href="javascript:void(0);"
+                           data-hs-unfold-options='{
+                                     "target": "#accountNavbarDropdown",
+                                     "type": "css-animation"
+                                   }'>
+                            <div class="media-body d-flex align-items-end flex-column">
+                                <span class="card-title h5">{{auth('branch')->user()->name}}</span>
+                                <span class="card-text fz-12 font-weight-bold">{{translate('Branch Admin')}}</span>
+                            </div>
+                            <div class="avatar avatar-sm {{--avatar-circle--}}">
+                                <img class="avatar-img"
+                                     onerror="this.src='{{asset('public-assets/assets/admin/img/160x160/img1.jpg')}}'"
+                                     src="{{asset('storage/app/public/branch')}}/{{auth('branch')->user()->image}}"
+                                     alt="Image Description">
+                                <span class="avatar-status avatar-sm-status avatar-status-success"></span>
+                            </div>
+                        </a>
+
+                        <div id="accountNavbarDropdown"
+                             class="hs-unfold-content dropdown-unfold dropdown-menu dropdown-menu-right navbar-dropdown-menu navbar-dropdown-account"
+                             style="width: 16rem;">
+                            <div class="dropdown-item">
+                                <div class="media align-items-center">
+                                    {{--<div class="avatar avatar-sm --}}{{--avatar-circle--}}{{--">
+                                        <img class="avatar-img"
+                                             onerror="this.src='{{asset('public-assets/assets/admin/img/160x160/img1.jpg')}}'"
+                                             src="{{asset('storage/app/public/branch')}}/{{auth('branch')->user()->image}}"
+                                             alt="Image Description">
+                                    </div>--}}
+                                    <div class="media-body">
+                                        <span class="card-title h5">{{auth('branch')->user()->name}}</span>
+                                        <span class="card-text">{{auth('branch')->user()->email}}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{--                            --}}{{--<div class="dropdown-divider"></div>--}}
+
+                            {{--                            <a class="dropdown-item" href="{{route('branch.settings')}}">--}}
+                            {{--                                <span class="text-truncate pr-2" title="Settings">{{translate('settings')}}</span>--}}
+                            {{--                            </a>--}}
+
+                            <div class="dropdown-divider"></div>
+
+                            <a class="dropdown-item" href="javascript:void(0);" onclick="Swal.fire({
+                                title: '{{translate('Do you want to logout ?')}}',
+                                showDenyButton: true,
+                                showCancelButton: true,
+                                confirmButtonColor: '#FC6A57',
+                                cancelButtonColor: '#363636',
+                                confirmButtonText: `{{translate('Yes')}}`,
+                                cancelButtonText: `{{translate('No')}}`,
+                                }).then((result) => {
+                                if (result.value) {
+                                location.href='{{route('branch.auth.logout')}}';
+                                } else{
+                                Swal.fire({
+                                title: '{{translate("Canceled")}}',
+                                confirmButtonText: '{{translate("Okay")}}',
+                                })
+                                }
+                                })">
+                                <span class="text-truncate pr-2" title="Sign out">{{translate('sign_out')}}</span>
+                            </a>
+                        </div>
+                    </div>
+                    <!-- End Account -->
+                </div>
+            </div>
+            <ul class="ml-5 list-inline-menu justify-content-center justify-content-md-end">
+
+                <li>
+                    <a href="{{route('branch.pos.index')}}">
+                        <span>{{translate('Home')}}</span>
+                        <img width="12" class="avatar-img rounded-0" src="{{asset('public-assets/assets/admin/img/icons/home.png')}}" alt="Image Description">
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+
+        <div class="d-flex justify-content-between">
+            <div class="navbar-nav align-items-center flex-row mr-4">
                 <div class="nav-item mx-2">
                     <!-- POS -->
                     <div class="hs-unfold">
@@ -107,96 +198,27 @@
 
             <!-- Delivery -->
             <div class="navbar-vertical-aside-has-menu">
-                <a type="button" class="btn btn-ghost-primary nav-link nav-link-toggle my-2" data-toggle="modal" data-target="#delivery-menu-modal">
+                <a type="button" class="btn btn-ghost-primary nav-link  my-2" data-toggle="modal" data-target="#delivery-menu-modal">
                     <i class="tio-shopping nav-icon"></i>
                     <span class="">{{translate('Delivery')}}</span>
                 </a>
             </div>
             <!-- End Delivery -->
 
-            <div class="navbar-nav align-items-center flex-row">
-
-                <div class="nav-item ml-4">
-                    <!-- Account -->
-                    <div class="hs-unfold">
-                        <a class="js-hs-unfold-invoker navbar-dropdown-account-wrapper media gap-2" href="javascript:void(0);"
-                           data-hs-unfold-options='{
-                                     "target": "#accountNavbarDropdown",
-                                     "type": "css-animation"
-                                   }'>
-                            <div class="media-body d-flex align-items-end flex-column">
-                                <span class="card-title h5">{{auth('branch')->user()->name}}</span>
-                                <span class="card-text fz-12 font-weight-bold">{{translate('Branch Admin')}}</span>
-                            </div>
-                            <div class="avatar avatar-sm {{--avatar-circle--}}">
-                                <img class="avatar-img"
-                                     onerror="this.src='{{asset('public/assets/admin/img/160x160/img1.jpg')}}'"
-                                     src="{{asset('storage/app/public/branch')}}/{{auth('branch')->user()->image}}"
-                                     alt="Image Description">
-                                <span class="avatar-status avatar-sm-status avatar-status-success"></span>
-                            </div>
-                        </a>
-
-                        <div id="accountNavbarDropdown"
-                             class="hs-unfold-content dropdown-unfold dropdown-menu dropdown-menu-right navbar-dropdown-menu navbar-dropdown-account"
-                             style="width: 16rem;">
-                            <div class="dropdown-item">
-                                <div class="media align-items-center">
-                                    {{--<div class="avatar avatar-sm --}}{{--avatar-circle--}}{{--">
-                                        <img class="avatar-img"
-                                             onerror="this.src='{{asset('public/assets/admin/img/160x160/img1.jpg')}}'"
-                                             src="{{asset('storage/app/public/branch')}}/{{auth('branch')->user()->image}}"
-                                             alt="Image Description">
-                                    </div>--}}
-                                    <div class="media-body">
-                                        <span class="card-title h5">{{auth('branch')->user()->name}}</span>
-                                        <span class="card-text">{{auth('branch')->user()->email}}</span>
-                                    </div>
-                                </div>
-                            </div>
-
-{{--                            --}}{{--<div class="dropdown-divider"></div>--}}
-
-{{--                            <a class="dropdown-item" href="{{route('branch.settings')}}">--}}
-{{--                                <span class="text-truncate pr-2" title="Settings">{{translate('settings')}}</span>--}}
-{{--                            </a>--}}
-
-                            <div class="dropdown-divider"></div>
-
-                            <a class="dropdown-item" href="javascript:void(0);" onclick="Swal.fire({
-                                title: '{{translate('Do you want to logout ?')}}',
-                                showDenyButton: true,
-                                showCancelButton: true,
-                                confirmButtonColor: '#FC6A57',
-                                cancelButtonColor: '#363636',
-                                confirmButtonText: `{{translate('Yes')}}`,
-                                cancelButtonText: `{{translate('No')}}`,
-                                }).then((result) => {
-                                if (result.value) {
-                                location.href='{{route('branch.auth.logout')}}';
-                                } else{
-                                Swal.fire({
-                                title: '{{translate("Canceled")}}',
-                                confirmButtonText: '{{translate("Okay")}}',
-                                })
-                                }
-                                })">
-                                <span class="text-truncate pr-2" title="Sign out">{{translate('sign_out')}}</span>
-                            </a>
-                        </div>
-                    </div>
-                    <!-- End Account -->
-                </div>
+            <!-- Pay Pickup -->
+            <div class="navbar-vertical-aside-has-menu">
+                <a type="button" class="btn btn-ghost-primary nav-link  my-2" data-toggle="modal" data-target="#pay-pickup-modal">
+                    <i class="tio-money nav-icon"></i>
+                    <span class="">{{translate('Pay Pickup')}}</span>
+                </a>
             </div>
+            <!-- Pay Pickup -->
 
-            <!-- End Navbar -->
-        </div>
-
-
-        <div class="navbar-nav justify-content-center">
-            <a target="_blank" href="/" class="btn btn-primary">
-                Admin Login
-            </a>
+            <div class="navbar-nav align-items-center flex-row">
+                <a target="_blank" href="/" class="btn btn-primary">
+                    Admin Login
+                </a>
+            </div>
         </div>
 
     </header>
@@ -293,6 +315,22 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
                 <div id="delivery-menu-table">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pay Pickup Modal -->
+<div class="modal fade" id="pay-pickup-modal" role="dialog" aria-labelledby="pay-pickup-modal-label" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content border-primary">
+            <div class="modal-body">
+                <button type="button" class="close modal-close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <div id="pay-pickup-table">
 
                 </div>
             </div>

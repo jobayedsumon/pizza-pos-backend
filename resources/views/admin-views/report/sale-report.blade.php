@@ -11,7 +11,7 @@
         <!-- Page Header -->
         <div class="d-flex flex-wrap gap-2 align-items-center mb-4">
             <h2 class="h1 mb-0 d-flex align-items-center gap-2">
-                <img width="20" class="avatar-img" src="{{asset('public/assets/admin/img/icons/sales.png')}}" alt="">
+                <img width="20" class="avatar-img" src="{{asset('public-assets/assets/admin/img/icons/sales.png')}}" alt="">
                 <span class="page-header-title">
                     {{translate('Sale_Report')}}
                 </span>
@@ -25,7 +25,7 @@
                 <div class="media flex-column flex-sm-row flex-wrap align-items-sm-center gap-4">
                     <!-- Avatar -->
                     <div class="avatar avatar-xl">
-                        <img class="avatar-img" src="{{asset('public/assets/admin')}}/svg/illustrations/credit-card.svg"
+                        <img class="avatar-img" src="{{asset('public-assets/assets/admin')}}/svg/illustrations/credit-card.svg"
                             alt="Image Description">
                     </div>
                     <!-- End Avatar -->
@@ -42,7 +42,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="d-flex">
                                 <a class="btn btn-icon btn-primary rounded-circle px-2" href="{{route('admin.dashboard')}}">
                                     <i class="tio-home-outlined"></i>
@@ -53,7 +53,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="card mt-3">
             <div class="card-body">
                 <form action="javascript:" id="search-form" method="POST">
@@ -86,7 +86,7 @@
                         <div class="col-md-6 d-flex flex-column gap-2">
                             <div>
                                 <strong>
-                                    {{translate('total_Orders')}} : 
+                                    {{translate('total_Orders')}} :
                                     <span id="order_count"> </span>
                                 </strong>
                             </div>
@@ -107,7 +107,7 @@
                 </form>
 
                 <hr>
-                
+
                 <div class="table-responsive datatable_wrapper_row mt-5" id="set-rows">
                     @include('admin-views.report.partials._table',['data'=>[]])
                 </div>
@@ -167,7 +167,7 @@
             dom: 'Bfrtip',
             language: {
                 zeroRecords: '<div class="text-center p-4">' +
-                    '<img class="mb-3" src="{{asset('public/assets/admin')}}/svg/illustrations/sorry.svg" alt="Image Description" style="width: 7rem;">' +
+                    '<img class="mb-3" src="{{asset('public-assets/assets/admin')}}/svg/illustrations/sorry.svg" alt="Image Description" style="width: 7rem;">' +
                     '<p class="mb-0">{{translate('No data to show')}}</p>' +
                     '</div>'
             }

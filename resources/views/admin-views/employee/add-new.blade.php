@@ -3,7 +3,7 @@
 @section('title', translate('Employee Add'))
 
 @push('css_or_js')
-{{--    <link href="{{asset('public/assets/back-end')}}/css/select2.min.css" rel="stylesheet"/>--}}
+{{--    <link href="{{asset('public-assets/assets/back-end')}}/css/select2.min.css" rel="stylesheet"/>--}}
 {{--    <meta name="csrf-token" content="{{ csrf_token() }}">--}}
 @endpush
 
@@ -12,7 +12,7 @@
     <!-- Page Header -->
     <div class="d-flex flex-wrap gap-2 align-items-center mb-4">
         <h2 class="h1 mb-0 d-flex align-items-center gap-2">
-            <img width="20" class="avatar-img" src="{{asset('public/assets/admin/img/icons/employee.png')}}" alt="">
+            <img width="20" class="avatar-img" src="{{asset('public-assets/assets/admin/img/icons/employee.png')}}" alt="">
             <span class="page-header-title">
                 {{translate('add_New_Employee')}}
             </span>
@@ -38,15 +38,10 @@
                                     <input type="text" name="name" class="form-control" id="name"
                                         placeholder="{{translate('Ex')}} : {{translate('Jhon_Doe')}}" value="{{old('name')}}" required>
                                 </div>
-                                <div class="form-group">
-                                    <label for="phone">{{translate('Phone')}}</label>
-                                    <input type="tel" name="phone" value="{{old('phone')}}" class="form-control" id="phone"
-                                        placeholder="{{translate('Ex')}} : +88017********" required>
-                                </div>
 
                                 <div class="form-group">
                                     <label for="role_id">{{translate('Role')}}</label>
-                                    <select class="custom-select" name="role_id">
+                                    <select class="custom-select" name="role_id" required>
                                         <option value="0" selected disabled>---{{translate('select_Role')}}---</option>
                                         @foreach($rls as $r)
                                             <option value="{{$r->id}}" {{old('role_id')==$r->id?'selected':''}}>{{$r->name}}</option>
@@ -55,8 +50,14 @@
                                 </div>
 
                                 <div class="form-group">
+                                    <label for="phone">{{translate('Phone')}}</label>
+                                    <input type="tel" name="phone" value="{{old('phone')}}" class="form-control" id="phone"
+                                        placeholder="{{translate('Ex')}} : +88017********">
+                                </div>
+
+                                <div class="form-group">
                                     <label for="identity_type">{{translate('Identity Type')}}</label>
-                                    <select class="custom-select" name="identity_type" id="identity_type" required>
+                                    <select class="custom-select" name="identity_type" id="identity_type" >
                                         <option selected disabled>---{{translate('select_Identity_Type')}}---</option>
                                         <option value="passport">{{translate('passport')}}</option>
                                         <option value="driving_license">{{translate('driving_License')}}</option>
@@ -65,7 +66,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="identity_number">{{translate('identity_Number')}}</label>
-                                    <input type="text" name="identity_number" class="form-control" id="identity_number" required value="{{old('identity_number')}}">
+                                    <input type="text" name="identity_number" class="form-control" id="identity_number" value="{{old('identity_number')}}">
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -79,7 +80,7 @@
                                     <div class="form-group">
                                         <div class="custom-file text-left">
                                             <input type="file" name="image" id="customFileUpload" class="custom-file-input"
-                                                accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*" required>
+                                                accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
                                             <label class="custom-file-label" for="customFileUpload">{{translate('choose')}} {{translate('file')}}</label>
                                         </div>
                                     </div>
@@ -106,21 +107,21 @@
                                 <div class="form-group">
                                     <label for="email">{{translate('Email')}}</label>
                                     <input type="email" name="email" value="{{old('email')}}" class="form-control" id="email"
-                                        placeholder="{{translate('Ex')}} : ex@gmail.com" required>
+                                        placeholder="{{translate('Ex')}} : ex@gmail.com">
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="password">{{translate('password')}}</label>
                                     <input type="password" name="password" class="form-control" id="password"
-                                        placeholder="{{translate('Ex: 8+ Characters')}}" required>
+                                        placeholder="{{translate('Ex: 8+ Characters')}}">
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <label for="confirm_password">{{translate('confirm_Password')}}</label>
                                     <input type="password" name="confirm_password" class="form-control" id="confirm_password"
-                                        placeholder="{{translate('Ex: 8+ Characters')}}" required>
+                                        placeholder="{{translate('Ex: 8+ Characters')}}">
                                 </div>
                             </div>
                         </div>
@@ -138,8 +139,8 @@
 @endsection
 
 @push('script_2')
-    <script src="{{asset('public/assets/admin/js/vendor.min.js')}}"></script>
-    <script src="{{asset('public/assets/admin')}}/js/select2.min.js"></script>
+    <script src="{{asset('public-assets/assets/admin/js/vendor.min.js')}}"></script>
+    <script src="{{asset('public-assets/assets/admin')}}/js/select2.min.js"></script>
     <script>
         function readURL(input) {
             if (input.files && input.files[0]) {
@@ -166,7 +167,7 @@
         });
     </script>
 
-    <script src="{{asset('public/assets/admin/js/spartan-multi-image-picker.js')}}"></script>
+    <script src="{{asset('public-assets/assets/admin/js/spartan-multi-image-picker.js')}}"></script>
     <script type="text/javascript">
         $(function () {
             $("#coba").spartanMultiImagePicker({
@@ -176,7 +177,7 @@
                 groupClassName: 'col-6 col-lg-4',
                 maxFileSize: '',
                 placeholderImage: {
-                    image: '{{asset('public/assets/admin/img/400x400/img2.jpg')}}',
+                    image: '{{asset('public-assets/assets/admin/img/400x400/img2.jpg')}}',
                     width: '100%'
                 },
                 dropFileLabel: "Drop Here",

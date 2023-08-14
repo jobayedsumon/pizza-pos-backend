@@ -11,7 +11,7 @@
     <!-- Page Header -->
     <div class="d-flex flex-wrap gap-2 align-items-center mb-4">
         <h2 class="h1 mb-0 d-flex align-items-center gap-2">
-            <img width="20" class="avatar-img" src="{{asset('public/assets/admin/img/icons/cooking.png')}}" alt="">
+            <img width="20" class="avatar-img" src="{{asset('public-assets/assets/admin/img/icons/cooking.png')}}" alt="">
             <span class="page-header-title">
                 {{translate('Add_New_Chef')}}
             </span>
@@ -40,7 +40,7 @@
                                 <input type="text" name="l_name" class="form-control" id="l_name"
                                         placeholder="{{translate('Ex')}} : {{translate('Doe')}}" value="{{old('l_name')}}" required>
                             </div>
-                            
+
                             <div class="col-md-6  mb-3">
                                 <label for="name">{{translate('Phone')}} <span class="text-danger">*</span></label>
                                 <input type="text" name="phone" value="{{old('phone')}}" class="form-control" id="phone"
@@ -51,19 +51,19 @@
                                 <input type="email" name="email" value="{{old('email')}}" class="form-control" id="email"
                                         placeholder="{{translate('Ex')}} : ex@gmail.com" required>
                             </div>
-                            
+
                             <div class="col-md-6 mb-3">
                                 <label for="name">
-                                    {{translate('password')}} 
-                                    <span class="text-danger">*</span> 
+                                    {{translate('password')}}
+                                    <span class="text-danger">*</span>
                                     {{translate('(minimum length will be 6 character)')}}
                                 </label>
                                 <input type="password" name="password" class="form-control" id="password"
                                         placeholder="{{translate('Password')}}" required>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="name">{{translate('image')}}</label> 
-                                <span class="text-danger">*</span> 
+                                <label for="name">{{translate('image')}}</label>
+                                <span class="text-danger">*</span>
                                 <span class="badge badge-soft-danger">( {{translate('ratio')}} 1:1 )</span>
                                 <div class="form-group">
                                     <div class="custom-file text-left">
@@ -93,7 +93,7 @@
 
 @push('script')
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-    <script src="{{asset('public/assets/admin')}}/js/select2.min.js"></script>
+    <script src="{{asset('public-assets/assets/admin')}}/js/select2.min.js"></script>
     <script>
         function readURL(input) {
             if (input.files && input.files[0]) {

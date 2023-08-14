@@ -2,7 +2,7 @@
     <!-- Page Header -->
     <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
         <h2 class="h1 mb-0 d-flex align-items-center gap-1">
-            <img width="20" class="avatar-img" src="{{asset('public/assets/admin/img/icons/all_orders.png')}}" alt="">
+            <img width="20" class="avatar-img" src="{{asset('public-assets/assets/admin/img/icons/all_orders.png')}}" alt="">
             <span class="page-header-title">
                 {{translate($status)}} {{translate('Orders')}}
                 </span>
@@ -63,7 +63,7 @@
             <div class="col-sm-4 col-md-6 col-lg-8 d-flex justify-content-end">
                 <div>
                     <a class="btn btn-outline-primary" href="{{route('branch.orders.export-excel-orders',$status)}}">
-                        <img width="14" src="{{asset('public/assets/admin/img/icons/excel.png')}}" alt="">
+                        <img width="14" src="{{asset('public-assets/assets/admin/img/icons/excel.png')}}" alt="">
                         {{translate('Export Excel')}}
                     </a>
                 </div>
@@ -151,13 +151,8 @@
                             @endif
                         </td>
                         <td class="text-capitalize">
-                            @if($order['order_type']=='take_away')
-                                <span class="badge-soft-success px-2 rounded">{{translate('take_away')}}
+                                <span class="badge-soft-success px-2 rounded">{{translate($order['order_type'])}}
                                     </span>
-                            @else
-                                <span class="badge-soft-success px-2 rounded">{{translate('delivery')}}
-                                    </span>
-                            @endif
 
                         </td>
                         <td>

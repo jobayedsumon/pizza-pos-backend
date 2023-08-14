@@ -35,7 +35,7 @@
                     $discount_type = $cart['discount_type'];
                 }
                 ?>
-            @foreach(session()->get('cart') as $key => $cartItem)
+            @foreach($cart as $key => $cartItem)
                 @if(is_array($cartItem))
                         <?php
                         $product_subtotal = ($cartItem['price'])*$cartItem['quantity'];
@@ -48,16 +48,18 @@
                         $total_tax += \App\CentralLogics\Helpers::tax_calculate($product, $cartItem['price'])*$cartItem['quantity'];
 
                         ?>
+
                     <tr>
                         <td>
                             <div class="media align-items-center gap-10">
                                 <img class="avatar avatar-sm" src="{{asset('storage/app/public/product')}}/{{$cartItem['image']}}"
-                                     onerror="this.src='{{asset('public/assets/admin/img/160x160/img2.jpg')}}'" alt="{{$cartItem['name']}} image">
+                                     onerror="this.src='{{asset('public-assets/assets/admin/img/160x160/img2.jpg')}}'" alt="{{$cartItem['name']}} image">
                                 <div class="media-body">
-                                    <h5 class="text-hover-primary mb-0">{{Str::limit($cartItem['name'], 10)}}</h5>
-                                    <small>{{Str::limit($cartItem['variant'], 20)}}</small>
+                                    <h5 class="text-hover-primary mb-0">{{Str::limit($cartItem['name'], 50)}}</h5>
+                                    <small class="font-weight-bold">{{Str::limit($cartItem['variant'], 20)}}</small>
                                     <small class="d-block">
                                         @php($add_on_qtys=$cartItem['add_on_qtys'])
+                                        @php($addonSubtotal=0)
                                         @foreach($cartItem['add_ons'] as $key2 =>$id)
                                             @php($addon=\App\Model\AddOn::find($id))
                                             @if($key2==0)<strong><u>Addons : </u></strong>@endif
@@ -68,10 +70,12 @@
                                                 @php($add_on_qty=$add_on_qtys[$key2])
                                             @endif
 
+                                        @php($addonSubtotal += ($add_on_qty ?? 0) * $addon['price'])
+
                                             <div class="font-size-sm text-body">
                                                 <span>{{$addon['name']}} :  </span>
                                                 <span class="font-weight-bold">
-                                                    {{ $add_on_qty}} x {{ \App\CentralLogics\Helpers::set_symbol($addon['price']) }}
+                                                    {{ $add_on_qty}}
                                                 </span>
                                             </div>
                                         @endforeach
@@ -89,11 +93,15 @@
                             </div>
                         </td>
                         <td>
-                            <input type="number" class="form-control qty" data-key="{{$key}}" value="{{$cartItem['quantity']}}" min="1" onkeyup="updateQuantity(event)">
+                            @if($cartItem['quantity'] == 0.5)
+                                <span class="badge badge-inline badge-soft-success">Half / Half</span>
+                            @else
+                                <input type="number" class="form-control qty" data-key="{{$key}}" value="{{$cartItem['quantity']}}" min="1" onkeyup="updateQuantity(event)">
+                            @endif
                         </td>
                         <td>
                             <div class="">
-                                {{ \App\CentralLogics\Helpers::set_symbol($product_subtotal) }}
+                                {{ \App\CentralLogics\Helpers::set_symbol($product_subtotal + $addonSubtotal) }}
                             </div> <!-- price-wrap .// -->
                         </td>
                         <td class="justify-content-center gap-2">
@@ -123,10 +131,10 @@ if($extra_discount) {
     $total -= $extra_discount;
 }
 ?>
-<div class="pos-data-table px-3">
+<div class="pos-data-table px-3 mt-3">
     <dl class="row">
-        <dt  class="col-6">{{translate('addon')}} : </dt>
-        <dd class="col-6 text-right">{{ \App\CentralLogics\Helpers::set_symbol($addon_price) }}</dd>
+{{--        <dt  class="col-6">{{translate('addon')}} : </dt>--}}
+{{--        <dd class="col-6 text-right">{{ \App\CentralLogics\Helpers::set_symbol($addon_price) }}</dd>--}}
 
         <dt  class="col-6">{{translate('sub_total')}} : </dt>
         <dd class="col-6 text-right">{{\App\CentralLogics\Helpers::set_symbol($subtotal+$addon_price) }}</dd>
@@ -142,8 +150,8 @@ if($extra_discount) {
             - {{ \App\CentralLogics\Helpers::set_symbol($extra_discount) }}
         </dd>
 
-        <dt  class="col-6">{{translate('VAT/TAX:')}} : </dt>
-        <dd class="col-6 text-right">{{ \App\CentralLogics\Helpers::set_symbol(round($total_tax,2)) }}</dd>
+{{--        <dt  class="col-6">{{translate('VAT/TAX:')}} : </dt>--}}
+{{--        <dd class="col-6 text-right">{{ \App\CentralLogics\Helpers::set_symbol(round($total_tax,2)) }}</dd>--}}
 
         <dt  class="col-6 {{ session()->get('delivery_address') ? '' : 'd-none' }} deliveryChargeInTable pb-2">{{translate('delivery_charge')}} : </dt>
         <dd class="col-6 {{ session()->get('delivery_address') ? '' : 'd-none' }} text-right deliveryChargeInTable pb-2" id="deliveryChargeInTableValue">

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Branch;
 use App\CentralLogics\Helpers;
 use App\Http\Controllers\Controller;
 use App\Model\AddOn;
+use App\Model\Admin;
+use App\Model\AdminRole;
 use App\Model\Branch;
 use App\Model\Category;
 use App\Model\CustomerAddress;
@@ -41,6 +43,7 @@ class POSController extends Controller
     public function index(Request $request)
     {
         $category = $request->query('category_id', 0);
+        $product_type = $request->query('product_type', 'all');
         $categories = Category::query()->active()->get();
         $first_category = Category::query()->active()->first();
         $keyword = $request->keyword;
@@ -49,6 +52,9 @@ class POSController extends Controller
         $selected_table = Table::query()->where('id', session('table_id'))->first();
 
         $products = Product::query()
+            ->when($product_type != 'all', function ($query) use ($product_type) {
+                $query->where('product_type', $product_type);
+            })
             ->when($request->has('category_id') && $request['category_id'] != 0, function ($query) use ($request) {
                 $query->whereJsonContains('category_ids', [['id' => (string)$request['category_id']]]);
             })
@@ -66,7 +72,10 @@ class POSController extends Controller
 
         $branch = Branch::query()->find(auth('branch')->id());
         $tables = Table::query()->where(['branch_id' => auth('branch')->id()])->get();
-        return view('branch-views.pos.index', compact('categories', 'products', 'category', 'keyword', 'branch', 'tables', 'selected_table', 'selected_customer'));
+        $pos_role = AdminRole::where('name', 'pos')->first();
+        $employees = Admin::where('admin_role_id', $pos_role->id)->select('id', 'f_name')->get();
+        session()->forget('order_taken_by');
+        return view('branch-views.pos.index', compact('categories', 'products', 'category', 'keyword', 'branch', 'tables', 'selected_table', 'selected_customer', 'employees'));
     }
 
     public function quick_view(Request $request)
@@ -83,7 +92,7 @@ class POSController extends Controller
     {
         $product = Product::query()->find($request->id);
         $str = '';
-        $quantity = 0;
+        $quantity = $request->half_half ?? $request->quantity;
         $price = 0;
         $addon_price = 0;
 
@@ -112,7 +121,7 @@ class POSController extends Controller
             $price = $product->price - Helpers::discount_calculate($product, $product->price);
         }
 
-        return array('price' => Helpers::set_symbol(($price * $request->quantity) + $addon_price));
+        return array('price' => Helpers::set_symbol(($price * $quantity) + $addon_price));
     }
 
     public function get_customers(Request $request)
@@ -120,20 +129,35 @@ class POSController extends Controller
         if ($request->customer_id) {
             $data = DB::table('users')
                 ->where('id', $request->customer_id)
-                ->get([DB::raw('id, CONCAT(f_name, " ", l_name, " (", phone ,")") as text')]);
+                ->get([DB::raw('id, CONCAT(f_name, " ", " (", phone ,")") as text')]);
         } else {
             $key = explode(' ', $request['q']);
             $data = DB::table('users')
                 ->where(function ($q) use ($key) {
                     foreach ($key as $value) {
+                        if (@$value[0] == 0) {
+                            $value = substr($value, 1);
+                        }
                         $q->orWhere('f_name', 'like', "%{$value}%")
-                            ->orWhere('l_name', 'like', "%{$value}%")
+//                            ->orWhere('l_name', 'like', "%{$value}%")
                             ->orWhere('phone', 'like', "%{$value}%");
                     }
                 })
-                ->whereNotNull(['f_name', 'l_name', 'phone'])
+                ->whereNotNull(['f_name', 'phone'])
                 ->limit(8)
-                ->get([DB::raw('id, CONCAT(f_name, " ", l_name, " (", phone ,")") as text')]);
+                ->get([DB::raw('id, CONCAT(f_name, " ", " (", phone ,")") as text')]);
+        }
+
+        $q = $request['q'];
+
+        if(count($data) == 0 && strlen($q) == 10 && is_numeric($q) && $q[0] == 0) {
+
+            $user = User::create([
+               'f_name' => 'New Customer',
+                'phone' => '+61' . substr($q, 1),
+            ]);
+
+            $data[] = (object)['id' => $user->id, 'text' => $user->f_name . ' (' . $user->phone . ')'];
         }
 
         $data[] = (object)['id' => false, 'text' => translate('walk_in_customer')];
@@ -198,6 +222,7 @@ class POSController extends Controller
         $variations = [];
         $price = 0;
         $addon_price = 0;
+        $quantity = $request->half_half ?? $request->quantity;
 
         //Gets all the choice values of customer choice option and generate a string like Black-S-Cotton
         foreach (json_decode($product->choice_options) as $key => $choice) {
@@ -213,12 +238,20 @@ class POSController extends Controller
         $data['variant'] = $str;
         if ($request->session()->has('cart')) {
             if (count($request->session()->get('cart')) > 0) {
+                $totalQuantity = 0;
                 foreach ($request->session()->get('cart') as $key => $cartItem) {
                     if (is_array($cartItem) && $cartItem['id'] == $request['id'] && $cartItem['variant'] == $str) {
                         return response()->json([
                             'data' => 1
                         ]);
                     }
+                    $totalQuantity += $cartItem['quantity'];
+                }
+
+                if (fmod($totalQuantity, 1) !== 0.00 && $quantity != 0.5) {
+                    return response()->json([
+                        'data' => 2,
+                    ]);
                 }
 
             }
@@ -235,7 +268,7 @@ class POSController extends Controller
             $price = $product->price;
         }
 
-        $data['quantity'] = $request['quantity'];
+        $data['quantity'] = $quantity;
         $data['price'] = $price;
         $data['name'] = $product->name;
         $data['discount'] = Helpers::discount_calculate($product, $price);
@@ -405,8 +438,8 @@ class POSController extends Controller
     //order
     public function delivery_popup_orders(Request $request)
     {
-        $from = $request->from;
-        $to = $request->to;
+        $from = $request->from ?? date('Y-m-d');
+        $to = $request->to ?? date('Y-m-d');
         $query_param = [];
         $search = $request['search'];
 
@@ -430,21 +463,27 @@ class POSController extends Controller
             $query_param = ['search' => $request['search']];
         }
 
-        if ($request->from || $request->to) {
-            if($request->from && !$request->to){
-                $query->whereBetween('created_at',[$request->from.' 00:00:00',date('Y-m-d').' 23:59:59']);
-                $query_param = ['from' => $request['from']];
-            } elseif (!$request->from && $request->to){
-                $query->whereBetween('created_at',['1970-01-01 00:00:00',$request->to.' 23:59:59']);
-                $query_param = ['to' => $request['to']];
-            } else {
-                $query->whereBetween('created_at',[$request->from.' 00:00:00',$request->to.' 23:59:59']);
-                $query_param = [
-                    'from' => $request['from'],
-                    'to' => $request['to'],
-                ];
-            }
-        }
+//        if ($request->from || $request->to) {
+//            if($request->from && !$request->to){
+//                $query->whereBetween('created_at',[$request->from.' 00:00:00',date('Y-m-d').' 23:59:59']);
+//                $query_param = ['from' => $request['from']];
+//            } elseif (!$request->from && $request->to){
+//                $query->whereBetween('created_at',['1970-01-01 00:00:00',$request->to.' 23:59:59']);
+//                $query_param = ['to' => $request['to']];
+//            } else {
+//                $query->whereBetween('created_at',[$request->from.' 00:00:00',$request->to.' 23:59:59']);
+//                $query_param = [
+//                    'from' => $request['from'],
+//                    'to' => $request['to'],
+//                ];
+//            }
+//        }
+
+        $query->whereBetween('created_at',[$from.' 00:00:00',$to.' 23:59:59']);
+        $query_param = [
+            'from' => $from,
+            'to' => $to,
+        ];
 
         $orders = $query->latest()/*->paginate(Helpers::getPagination())*/->take(200)->get();
 
@@ -502,6 +541,11 @@ class POSController extends Controller
 
     public function place_order(Request $request)
     {
+        if (!$request->session()->has('order_taken_by')) {
+            Toastr::error(translate('Please select your name'));
+            return back();
+        }
+
         if ($request->session()->has('cart')) {
             if (count($request->session()->get('cart')) < 1) {
                 Toastr::error(translate('cart_empty_warning'));
@@ -513,6 +557,16 @@ class POSController extends Controller
         }
         if (session('people_number') != null && (session('people_number') > 99 || session('people_number') <1)){
             Toastr::error(translate('enter valid people number'));
+            return back();
+        }
+
+        $cart = $request->session()->get('cart');
+        $toalCount = 0;
+        foreach ($cart as $item) {
+            $toalCount += $item['quantity'];
+        }
+        if(fmod($toalCount, 1) !== 0.00){
+            Toastr::error(translate('Please complete Half / Half order'));
             return back();
         }
 
@@ -546,7 +600,6 @@ class POSController extends Controller
 
         }
 
-        $cart = $request->session()->get('cart');
         $total_tax_amount = 0;
         $total_addon_price = 0;
         $product_price = 0;
@@ -569,6 +622,10 @@ class POSController extends Controller
             $order->payment_status = 'unpaid';
         }
 
+        if ($request->has('save')) {
+            $order->payment_status = 'unpaid';
+        }
+
         $order->order_status = session()->get('table_id') ? 'confirmed' : 'delivered';
 
         if ($request->receive_by == 'delivery') {
@@ -577,6 +634,10 @@ class POSController extends Controller
             } else {
                 $order->order_status = 'confirmed';
             }
+        }
+
+        if ($request->has('save')) {
+            $order->order_status = 'pending';
         }
 
         $order->order_type = session()->get('table_id') ? 'dine_in' : 'pos';
@@ -603,7 +664,7 @@ class POSController extends Controller
             $order->delivery_address = isset($customer_address) ? json_encode($customer_address) : null;
         }
 
-
+        $order->order_taken_by = $request->session()->get('order_taken_by');
         $order->order_note = null;
         $order->checked = 1;
         $order->created_at = now();
@@ -714,58 +775,63 @@ class POSController extends Controller
             OrderDetail::insert($order_details);
 
             session()->forget('cart');
-            session(['last_order' => $order->id]);
-
             session()->forget('customer_id');
             session()->forget('branch_id');
             session()->forget('table_id');
             session()->forget('people_number');
+            session()->forget('order_taken_by');
 
-            Toastr::success(translate('order_placed_successfully'));
+            if ($request->has('save')) {
+                session(['last_order' => false]);
+                Toastr::success(translate('order_saved_successfully'));
+            } else {
+                session(['last_order' => $order->id]);
+                Toastr::success(translate('order_placed_successfully'));
 
-
-            $user = User::query()->find($order->user_id);
-            $fcm_token = $user->cm_firebase_token;
-            $value = Helpers::order_status_update_message(($request->payment_method=='cash_on_delivery')?'pending':'confirmed');
-            try {
-                //send push notification
-                if ($value) {
-                    $data = [
-                        'title' => translate('Order'),
-                        'description' => $value,
-                        'order_id' => $order_id,
-                        'image' => '',
-                        'type'=>'order_status',
-                    ];
-                    Helpers::send_push_notif_to_device($fcm_token, $data);
-                }
-
-                //send email
-                $emailServices = Helpers::get_business_settings('mail_config');
-                if (isset($emailServices['status']) && $emailServices['status'] == 1) {
-                    Mail::to($user->email)->send(new \App\Mail\OrderPlaced($order_id));
-                }
-
-            } catch (\Exception $e) {
-
-            }
-
-            //send notification to kitchen
-            if ($order->order_type == 'dine_in' || $order->order_type == 'delivery'){
-                $notification = new Notification;
-                $notification->title =  "You have a new order from POS - (Order Confirmed). ";
-                $notification->description = $order->id;
-                $notification->status = 1;
-
+                $user = User::query()->find($order->user_id);
+                $fcm_token = $user->cm_firebase_token;
+                $value = Helpers::order_status_update_message(($request->payment_method=='cash_on_delivery')?'pending':'confirmed');
                 try {
-                    Helpers::send_push_notif_to_topic($notification, "kitchen-{$order->branch_id}",'general');
-                    Toastr::success(translate('Notification sent successfully!'));
+                    //send push notification
+                    if ($value) {
+                        $data = [
+                            'title' => translate('Order'),
+                            'description' => $value,
+                            'order_id' => $order_id,
+                            'image' => '',
+                            'type'=>'order_status',
+                        ];
+                        Helpers::send_push_notif_to_device($fcm_token, $data);
+                    }
+
+                    //send email
+                    $emailServices = Helpers::get_business_settings('mail_config');
+                    if (isset($emailServices['status']) && $emailServices['status'] == 1) {
+                        Mail::to($user->email)->send(new \App\Mail\OrderPlaced($order_id));
+                    }
+
                 } catch (\Exception $e) {
-                    Toastr::warning(translate('Push notification failed!'));
+
+                }
+
+                //send notification to kitchen
+                if ($order->order_type == 'dine_in' || $order->order_type == 'delivery'){
+                    $notification = new Notification;
+                    $notification->title =  "You have a new order from POS - (Order Confirmed). ";
+                    $notification->description = $order->id;
+                    $notification->status = 1;
+
+                    try {
+                        Helpers::send_push_notif_to_topic($notification, "kitchen-{$order->branch_id}",'general');
+                        Toastr::success(translate('Notification sent successfully!'));
+                    } catch (\Exception $e) {
+                        Toastr::warning(translate('Push notification failed!'));
+                    }
                 }
             }
 
             return back();
+
         } catch (\Exception $e) {
             info($e);
         }
@@ -776,6 +842,8 @@ class POSController extends Controller
     public function generate_invoice($id)
     {
         $order = Order::query()->where('id', $id)->first();
+
+        return view('branch-views.pos.order.invoice', compact('order'));
 
         return response()->json([
             'success' => 1,
@@ -806,7 +874,7 @@ class POSController extends Controller
     {
         $request->validate([
             'f_name' => 'required',
-            'l_name' => 'required',
+//            'l_name' => 'required',
             'phone' => 'required|unique:users',
             'email' => 'nullable|email|unique:users',
 

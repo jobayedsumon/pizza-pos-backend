@@ -7,6 +7,7 @@ use App\CPU\BackEndHelper;
 use App\Http\Controllers\Controller;
 use App\Model\AddOn;
 use App\Model\Admin;
+use App\Model\AdminRole;
 use App\Model\Branch;
 use App\Model\Category;
 use App\Model\Coupon;
@@ -53,7 +54,10 @@ class POSController extends Controller
 
         $current_branch = Admin::find(auth('admin')->id());
         $branches = Branch::select('id', 'name')->get();
-        return view('admin-views.pos.index', compact('categories', 'products', 'category', 'keyword', 'current_branch', 'branches', 'selected_customer', 'selected_table'));
+        $pos_role = AdminRole::where('name', 'pos')->first();
+        $employees = Admin::where('admin_role_id', $pos_role->id)->select('id', 'f_name')->get();
+        session()->forget('order_taken_by');
+        return view('admin-views.pos.index', compact('categories', 'products', 'category', 'keyword', 'current_branch', 'branches', 'selected_customer', 'selected_table', 'employees'));
     }
 
     public function quick_view(Request $request)
@@ -111,14 +115,29 @@ class POSController extends Controller
             ->where(['user_type' => null])
             ->where(function ($q) use ($key) {
                 foreach ($key as $value) {
+                    if (@$value[0] == 0) {
+                        $value = substr($value, 1);
+                    }
                     $q->orWhere('f_name', 'like', "%{$value}%")
-                        ->orWhere('l_name', 'like', "%{$value}%")
+//                        ->orWhere('l_name', 'like', "%{$value}%")
                         ->orWhere('phone', 'like', "%{$value}%");
                 }
             })
-            ->whereNotNull(['f_name', 'l_name', 'phone'])
+            ->whereNotNull(['f_name', 'phone'])
             ->limit(8)
-            ->get([DB::raw('id, CONCAT(f_name, " ", l_name, " (", phone ,")") as text')]);
+            ->get([DB::raw('id, CONCAT(f_name, " ", " (", phone ,")") as text')]);
+
+        $q = $request['q'];
+
+        if(count($data) == 0 && strlen($q) == 10 && is_numeric($q) && $q[0] == 0) {
+
+            $user = User::create([
+                'f_name' => 'New Customer',
+                'phone' => '+61' . substr($q, 1),
+            ]);
+
+            $data[] = (object)['id' => $user->id, 'text' => $user->f_name . ' (' . $user->phone . ')'];
+        }
 
         $data[] = (object)['id' => false, 'text' => translate('walk_in_customer')];
 
@@ -357,6 +376,10 @@ class POSController extends Controller
 
     public function place_order(Request $request)
     {
+        if (!$request->session()->has('order_taken_by')) {
+            Toastr::error(translate('Please select your name'));
+            return back();
+        }
 
         if ($request->session()->has('cart')) {
             if (count($request->session()->get('cart')) < 1) {
@@ -424,6 +447,10 @@ class POSController extends Controller
             $order->payment_status = 'unpaid';
         }
 
+        if ($request->has('save')) {
+            $order->payment_status = 'unpaid';
+        }
+
         $order->order_status = session()->get('table_id') ? 'confirmed' : 'delivered';
 
         if ($request->receive_by == 'delivery') {
@@ -432,6 +459,10 @@ class POSController extends Controller
             } else {
                 $order->order_status = 'confirmed';
             }
+        }
+
+        if ($request->has('save')) {
+            $order->order_status = 'pending';
         }
 
         $order->order_type = session()->get('table_id') ? 'dine_in' : 'pos';
@@ -456,6 +487,7 @@ class POSController extends Controller
             $order->delivery_address = isset($customer_address) ? json_encode($customer_address) : null;
         }
 
+        $order->order_taken_by = $request->session()->get('order_taken_by');
         $order->order_note = null;
         $order->checked = 1;
         $order->created_at = now();
@@ -722,7 +754,7 @@ class POSController extends Controller
     {
         $request->validate([
             'f_name' => 'required',
-            'l_name' => 'required',
+//            'l_name' => 'required',
             'phone' => 'required|unique:users',
             'email' => 'nullable|email|unique:users',
 

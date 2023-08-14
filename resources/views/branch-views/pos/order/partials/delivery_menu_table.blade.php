@@ -2,7 +2,7 @@
     <!-- Page Header -->
     <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
         <h2 class="h1 mb-0 d-flex align-items-center gap-2">
-            <img width="20" class="avatar-img" src="{{asset('public/assets/admin/img/icons/all_orders.png')}}" alt="">
+            <img width="20" class="avatar-img" src="{{asset('public-assets/assets/admin/img/icons/all_orders.png')}}" alt="">
             <span class="page-header-title">
                     {{translate('POS_Orders')}}
                 </span>
@@ -59,7 +59,7 @@
                     <div class="col-sm-4 col-md-6 col-lg-8 d-flex justify-content-end">
                         <div>
                             <a type="submit" class="btn btn-outline-primary" href="{{route('branch.orders.export-excel-pos')}}">
-                                <img width="14" src="{{asset('public/assets/admin/img/icons/excel.png')}}" alt="">
+                                <img width="14" src="{{asset('public-assets/assets/admin/img/icons/excel.png')}}" alt="">
                                 {{translate('Export Excel')}}
                             </a>
                         </div>

@@ -11,7 +11,7 @@
         <div class="d-flex align-items-center justify-content-center active">
             <img class="img-responsive rounded" width="160"
                  src="{{asset('storage/app/public/product')}}/{{$product['image']}}"
-                 onerror="this.src='{{asset('public/assets/admin/img/160x160/img2.jpg')}}'"
+                 onerror="this.src='{{asset('public-assets/assets/admin/img/160x160/img2.jpg')}}'"
                  data-zoom="{{asset('storage/app/public/product')}}/{{$product['image']}}"
                  alt="Product image" width="">
             <div class="cz-image-zoom-pane"></div>
@@ -92,6 +92,20 @@
                     <h3 class="product-description-label mt-2 mb-0">{{translate('Quantity')}}:</h3>
 
                     <div class="product-quantity d-flex align-items-center">
+
+
+                        <div class="allergy-item flex-column mr-3">
+                            <input class="btn-check allergy-chek" type="checkbox"
+                                   id="half_half"
+                                   value="0.5"
+                                   name="half_half"
+                                   autocomplete="off">
+                            <label class="d-flex align-items-center btn btn-sm check-label p-3 allergy-input mb-0 h-100 break-all"
+                                   for="half_half">Half / Half
+                            </label>
+                        </div>
+
+
                         <div class="product-quantity-group d-flex align-items-center">
                             <button class="btn btn-number text-dark p-2" type="button"
                                     data-type="minus" data-field="quantity"

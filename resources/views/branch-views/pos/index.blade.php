@@ -1,6 +1,22 @@
 @extends('layouts.branch.app')
 @section('title', translate('POS'))
 
+<style>
+    .posCategoryCard {
+        width: 150px;
+        height: 100px;
+        border-radius: 10px;
+        box-shadow: 0px 0px 10px 0px #ccc;
+        margin-bottom: 10px;
+        margin-right: 10px;
+        padding: 10px;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1rem;
+    }
+</style>
     <!-- END ONLY DEV -->
 @section('content')
     <div class="container">
@@ -8,7 +24,7 @@
             <div class="col-md-12">
                 <div id="loading" style="display: none;">
                     <div style="position: fixed;z-index: 9999; left: 40%;top: 37% ;width: 100%">
-                        <img width="200" src="{{asset('public/assets/admin/img/loader.gif')}}">
+                        <img width="200" src="{{asset('public-assets/assets/admin/img/loader.gif')}}">
                     </div>
                 </div>
             </div>
@@ -21,11 +37,61 @@
             <div class="container-fluid py-4">
                 <div class="row gy-3 gx-2">
                     <div class="col-lg-7">
+
+                        @if(!request()->query->count())
+
+                        <div class="row">
+                            @foreach (['veg', 'chicken', 'meat', 'sea_food'] as $item)
+                                @php
+                                 if ($item == 'veg') {
+                                     $bgColor = 'green';
+                                 } elseif ($item == 'chicken') {
+                                     $bgColor = 'orange';
+                                 } elseif ($item == 'meat') {
+                                     $bgColor = 'red';
+                                 } elseif ($item == 'sea_food') {
+                                     $bgColor = '#00c3e3';
+                                 }
+                                @endphp
+                                <div class="card navbar-vertical-aside-has-menu posCategoryCard" style="background-color: {{ $bgColor }}">
+                                    <a class="js-navbar-vertical-aside-menu-link nav-link" href="{{ route('branch.pos.index',['product_type' => $item])  }}">
+                                        <span class="navbar-vertical-aside-mini-mode-hidden-elements text-white">{{ translate($item) }}</span>
+                                    </a>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <div class="row">
+                            @foreach ($categories as $item)
+                                @php
+                                    $itemName = strtolower($item->name);
+                                    if (str_contains($itemName, 'salad')) {
+                                        $bgColor = 'green';
+                                    } elseif (str_contains($itemName, 'pizza')) {
+                                        $bgColor = 'orange';
+                                    } elseif (str_contains($itemName, 'pasta') || str_contains($itemName, 'dessert')) {
+                                        $bgColor = '#00c3e3';
+                                    } else {
+                                        $bgColor = 'black';
+                                    }
+                                @endphp
+                                <div class="card navbar-vertical-aside-has-menu posCategoryCard" style="background-color: {{ $bgColor }}">
+                                    <a class="js-navbar-vertical-aside-menu-link nav-link" href="{{ route('branch.pos.index',['category_id' => $item->id])  }}">
+                                        <span class="navbar-vertical-aside-mini-mode-hidden-elements text-white">{{Str::limit($item->name, 40)}}</span>
+                                    </a>
+                                </div>
+                            @endforeach
+                        </div>
+
+                        @endif
+
+                        @if(request()->query->count())
+
                         <div class="card">
                             <!-- POS Title -->
-                            <div class="pos-title">
-                                <h4 class="mb-0">{{translate('Product_Section')}}</h4>
-                            </div>
+{{--                            <div class="pos-title">--}}
+{{--                                <h4 class="mb-0">{{translate('Product_Section')}}</h4>--}}
+{{--                            </div>--}}
                             <!-- End POS Title -->
 
                             <div class="d-flex flex-wrap flex-md-nowrap justify-content-between gap-3 gap-xl-4 px-4 py-4">
@@ -36,7 +102,7 @@
                                             <div class="input-group-prepend pl-2">
                                                 <div class="input-group-text">
                                                     <!-- <i class="tio-search"></i> -->
-                                                    <img width="13" src="{{asset('public/assets/admin/img/icons/search.png')}}" alt="">
+                                                    <img width="13" src="{{asset('public-assets/assets/admin/img/icons/search.png')}}" alt="">
                                                 </div>
                                             </div>
                                             <input id="datatableSearch" type="search" value="{{$keyword?$keyword:''}}" name="search" class="form-control border-0" placeholder="{{translate('Search_here')}}" aria-label="Search here">
@@ -57,6 +123,9 @@
                                 {!!$products->withQueryString()->links()!!}
                             </div>
                         </div>
+
+                        @endif
+
                     </div>
                     <div class="col-lg-5">
                         <div class="card billing-section-wrap">
@@ -66,7 +135,21 @@
                             </div>
                             <!-- End POS Title -->
 
+                            <div class="px-2 pt-2 px-sm-4 pt-sm-2">
+                                <label for="">Order Taken By</label>
+                                <select
+                                    onchange="store_key('order_taken_by', this.value)" id='order_taken_by' name="order_taken_by" data-placeholder="{{translate('Select Your Name')}}" class="form-control"
+                                >
+                                    <option selected disabled>{{translate('Select Your Name')}}</option>
+                                    @forelse($employees as $employee)
+                                        <option value="{{ $employee->id }}" {{ $employee->id == session('order_taken_by') ? 'selected' : ''}}>{{ $employee->f_name }}</option>
+                                    @empty
+                                    @endforelse
+                                </select>
+                            </div>
+
                             <div class="p-2 p-sm-4">
+                                <small>For new number put 0 first and total 10 digits to auto save.</small>
                                 <div class="d-flex flex-row gap-2 mb-3">
                                     <select
                                         onchange="changeCustomerId(this.value)" id='customer' name="customer_id" data-placeholder="{{translate('Walk_In_Customer')}}" class="js-data-example-ajax form-control"
@@ -132,32 +215,32 @@
                                 <div class="col-12 col-lg-6">
                                     <div class="form-group">
                                         <label class="input-label">
-                                            {{translate('First_Name')}}
+                                            {{translate('Name')}}
                                             <span class="input-label-secondary text-danger">*</span>
                                         </label>
                                         <input type="text" name="f_name" class="form-control" value="" placeholder="First name" required="">
                                     </div>
                                 </div>
-                                <div class="col-12 col-lg-6">
-                                    <div class="form-group">
-                                        <label class="input-label">
-                                            {{translate('Last_Name')}}
-                                            <span class="input-label-secondary text-danger">*</span>
-                                        </label>
-                                        <input type="text" name="l_name" class="form-control" value="" placeholder="Last name" required="">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row pl-2">
-                                <div class="col-12 col-lg-6">
-                                    <div class="form-group">
-                                        <label class="input-label">
-                                            {{translate('Email')}}
-                                            <span class="input-label-secondary"></span>
-                                        </label>
-                                        <input type="email" name="email" class="form-control" value="" placeholder="Ex : ex@example.com">
-                                    </div>
-                                </div>
+{{--                                <div class="col-12 col-lg-6">--}}
+{{--                                    <div class="form-group">--}}
+{{--                                        <label class="input-label">--}}
+{{--                                            {{translate('Last_Name')}}--}}
+{{--                                            <span class="input-label-secondary text-danger">*</span>--}}
+{{--                                        </label>--}}
+{{--                                        <input type="text" name="l_name" class="form-control" value="" placeholder="Last name" required="">--}}
+{{--                                    </div>--}}
+{{--                                </div>--}}
+{{--                            </div>--}}
+{{--                            <div class="row pl-2">--}}
+{{--                                <div class="col-12 col-lg-6">--}}
+{{--                                    <div class="form-group">--}}
+{{--                                        <label class="input-label">--}}
+{{--                                            {{translate('Email')}}--}}
+{{--                                            <span class="input-label-secondary"></span>--}}
+{{--                                        </label>--}}
+{{--                                        <input type="email" name="email" class="form-control" value="" placeholder="Ex : ex@example.com">--}}
+{{--                                    </div>--}}
+{{--                                </div>--}}
                                 <div class="col-12 col-lg-6">
                                     <div class="form-group">
                                         <label class="input-label">
@@ -220,10 +303,10 @@
 <!-- JS Implementing Plugins -->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 <!-- JS Front -->
-<script src="{{asset('public/assets/admin')}}/js/vendor.min.js"></script>
-<script src="{{asset('public/assets/admin')}}/js/theme.min.js"></script>
-<script src="{{asset('public/assets/admin')}}/js/sweet_alert.js"></script>
-<script src="{{asset('public/assets/admin')}}/js/toastr.js"></script>
+<script src="{{asset('public-assets/assets/admin')}}/js/vendor.min.js"></script>
+<script src="{{asset('public-assets/assets/admin')}}/js/theme.min.js"></script>
+<script src="{{asset('public-assets/assets/admin')}}/js/sweet_alert.js"></script>
+<script src="{{asset('public-assets/assets/admin')}}/js/toastr.js"></script>
 {{--{!! Toastr::message() !!}--}}
 
 @if ($errors->any())
@@ -240,6 +323,9 @@
 
 <!-- JS Plugins Init. -->
 <script>
+
+    $('#order_taken_by').select2();
+
     $(document).on('ready', function () {
         @if($order)
             print_invoice('{{$order->id}}')
@@ -447,6 +533,16 @@
                 e.preventDefault();
             }
         });
+
+        $('#half_half').click(function () {
+            if ($(this).is(':checked')) {
+                $('.btn-number').attr('disabled', true);
+                $('.input-number').attr('disabled', true);
+            } else {
+                $('.btn-number').removeAttr('disabled');
+                $('.input-number').removeAttr('disabled');
+            }
+        });
     }
 
     function getVariantPrice() {
@@ -482,8 +578,16 @@
                     $('#loading').show();
                 },
                 success: function (data) {
-                    console.log(data)
-                    if (data.data == 1) {
+                    if (data.data == 2) {
+                        Swal.fire({
+                            icon: 'info',
+                            title: '{{translate("Cart")}}',
+                            confirmButtonText:'{{translate("Ok")}}',
+                            text: "{{translate('Please add other half of the previous item')}}"
+                        });
+                        return false;
+                    }
+                    else if (data.data == 1) {
                         Swal.fire({
                             icon: 'info',
                             title: '{{translate("Cart")}}',
@@ -706,7 +810,7 @@
 </script>
 <!-- IE Support -->
 <script>
-    if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) document.write('<script src="{{asset('public/assets/admin')}}/vendor/babel-polyfill/polyfill.min.js"><\/script>');
+    if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) document.write('<script src="{{asset('public-assets/assets/admin')}}/vendor/babel-polyfill/polyfill.min.js"><\/script>');
 </script>
 @endpush
 {{-- </body>

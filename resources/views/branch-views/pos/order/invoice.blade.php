@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="{{asset('public-assets/assets/admin')}}/css/theme.minc619.css?v=1.0">
+
 <div style="width:370px;margin-left:18px" class="" id="printableAreaContent">
     <div class="text-center pt-4 mb-3 w-100">
         <h2 style="line-height: 1">{{\App\Model\BusinessSetting::where(['key'=>'restaurant_name'])->first()->value}}</h2>
@@ -20,14 +22,17 @@
                 {{date('d/M/Y h:i a',strtotime($order['created_at']))}}
             </h5>
         </div>
+        <div class="col-6">
+            <h5 class="text-nowrap">Taken By: {{ @$order->taken_by->f_name }}</h5>
+        </div>
         @if($order->customer)
             <div class="col-12">
                 <h5>{{translate('Customer Name')}} : {{$order->customer['f_name'].' '.$order->customer['l_name']}}</h5>
                 <h5>{{translate('Phone')}} : {{$order->customer['phone']}}</h5>
-{{--                <h5>--}}
-{{--                    {{translate('Address')}}--}}
-{{--                    : {{isset($order->delivery_address)?json_decode($order->delivery_address, true)['address']:''}}--}}
-{{--                </h5>--}}
+                <h5>
+                    {{translate('Address')}}
+                    : {{isset($order->delivery_address)?json_decode($order->delivery_address, true)['address']:''}}
+                </h5>
             </div>
         @endif
     </div>
@@ -50,9 +55,14 @@
         @foreach($order->details as $detail)
             @if($detail->product)
                 @php($add_on_qtys=json_decode($detail['add_on_qtys'],true))
+                @php($addonSubTotal=0)
                 <tr>
                     <td class="">
-                        {{$detail['quantity']}}
+                        @if($detail['quantity'] == 0.5)
+                            Half
+                        @else
+                            {{ intval($detail['quantity']) }}
+                        @endif
                     </td>
                     <td class="">
                         <span style="word-break: break-all;"> {{ Str::limit($detail->product['name'], 200) }}</span><br>
@@ -80,9 +90,10 @@
                             <div class="font-size-sm text-body">
                                 <span>{{$addon['name']}} :  </span>
                                 <span class="font-weight-bold">
-                                                {{$add_on_qty}} x {{ \App\CentralLogics\Helpers::set_symbol($addon['price'])}}
+                                                {{$add_on_qty}}
                                             </span>
                             </div>
+                            @php($addonSubTotal+=$addon['price']*$add_on_qty)
                             @php($add_ons_cost+=$addon['price']*$add_on_qty)
                         @endforeach
 
@@ -104,7 +115,7 @@
                         {{translate('Discount')}} : {{ \App\CentralLogics\Helpers::set_symbol($detail['discount_on_product']*$detail['quantity']) }}
                     </td>
                     <td style="width: 28%;padding-right:4px; text-align:right">
-                        @php($amount=($detail['price']-$detail['discount_on_product'])*$detail['quantity'])
+                        @php($amount=(($detail['price']-$detail['discount_on_product'])*$detail['quantity'] + $addonSubTotal))
                         {{ \App\CentralLogics\Helpers::set_symbol($amount) }}
                     </td>
                 </tr>
@@ -120,16 +131,15 @@
             <dl class="row text-right" style="color: black!important;">
                 <dt class="col-8">{{translate('Items Price')}}:</dt>
                 <dd class="col-4">{{ \App\CentralLogics\Helpers::set_symbol($sub_total) }}</dd>
-                <dt class="col-8">{{translate('Tax')}} / {{translate('VAT')}}:</dt>
-                <dd class="col-4">{{ \App\CentralLogics\Helpers::set_symbol($total_tax) }}</dd>
-                <dt class="col-8">{{translate('Addon Cost')}}:</dt>
-                <dd class="col-4">{{ \App\CentralLogics\Helpers::set_symbol($add_ons_cost) }}
-                    <hr>
-                </dd>
+{{--                <dt class="col-8">{{translate('Tax')}} / {{translate('VAT')}}:</dt>--}}
+{{--                <dd class="col-4">{{ \App\CentralLogics\Helpers::set_symbol($total_tax) }}</dd>--}}
+{{--                <dt class="col-8">{{translate('Addon Cost')}}:</dt>--}}
+{{--                <dd class="col-4">{{ \App\CentralLogics\Helpers::set_symbol($add_ons_cost) }}--}}
+{{--                    <hr>--}}
+{{--                </dd>--}}
 
                 <dt class="col-8">{{translate('Subtotal')}}:</dt>
-{{--                <dd class="col-6">{{ \App\CentralLogics\Helpers::set_symbol($sub_total+$total_tax+$add_ons_cost) }}</dd>--}}
-                <dd class="col-4">{{ \App\CentralLogics\Helpers::set_symbol($sub_total+$total_tax+$add_ons_cost) }}</dd>
+                <dd class="col-4">{{ \App\CentralLogics\Helpers::set_symbol($sub_total+$total_tax) }}</dd>
                 <dt class="col-8">{{translate('Coupon Discount')}}:</dt>
                 <dd class="col-4">
                     -{{ \App\CentralLogics\Helpers::set_symbol($order['coupon_discount_amount']) }}</dd>
@@ -147,8 +157,8 @@
                     <hr>
                 </dd>
                 <dt class="col-8" style="font-size: 20px">{{translate('Total')}}:</dt>
-                <dd class="col-4" style="font-size: 20px">{{ \App\CentralLogics\Helpers::set_symbol($sub_total+$del_c+$total_tax+$add_ons_cost-$order['coupon_discount_amount']) }}</dd>
-                {{--<dd class="col-4" style="font-size: 20px">{{ \App\CentralLogics\Helpers::set_symbol($order->order_amount) }}</dd>--}}
+{{--                <dd class="col-4" style="font-size: 20px">{{ \App\CentralLogics\Helpers::set_symbol($sub_total+$del_c+$total_tax+$add_ons_cost-$order['coupon_discount_amount']) }}</dd>--}}
+                <dd class="col-4" style="font-size: 20px">{{ \App\CentralLogics\Helpers::set_symbol($order->order_amount) }}</dd>
             </dl>
         </div>
     </div>
@@ -160,4 +170,7 @@
         """{{translate('THANK YOU')}}"""
     </h5>
     <span>--------------------------------------------</span>
+    <h5 class="text-center pt3">
+        {{ env('USER_URL') }}
+    </h5>
 </div>

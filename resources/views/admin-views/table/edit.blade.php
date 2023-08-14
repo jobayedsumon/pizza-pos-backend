@@ -11,14 +11,14 @@
         <!-- Page Header -->
         <div class="d-flex flex-wrap gap-2 align-items-center mb-4">
             <h2 class="h1 mb-0 d-flex align-items-center gap-2">
-                <img width="20" class="avatar-img" src="{{asset('public/assets/admin/img/icons/table.png')}}" alt="">
+                <img width="20" class="avatar-img" src="{{asset('public-assets/assets/admin/img/icons/table.png')}}" alt="">
                 <span class="page-header-title">
                     {{translate('Update_Table')}}
                 </span>
             </h2>
         </div>
         <!-- End Page Header -->
-        
+
         <div class="card">
             <div class="card-body">
                 <form action="{{route('admin.table.update',[$table['id']])}}" method="post">
@@ -26,7 +26,7 @@
                     <div class="row">
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="number">{{translate('Table_Number')}} 
+                                <label for="number">{{translate('Table_Number')}}
                                 <span class="text-danger">*</span></label>
                                 <input type="number" name="number" class="form-control" id="number"
                                     placeholder="{{translate('Ex')}} : {{translate('1')}}" value="{{$table->number}}" required>
@@ -34,7 +34,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label for="capacity">{{translate('Table_Capacity')}} 
+                                <label for="capacity">{{translate('Table_Capacity')}}
                                 <span class="text-danger">*</span></label>
                                 <input type="number" name="capacity" class="form-control" id="capacity" min="1" max="99"
                                     placeholder="{{translate('Ex')}} : {{translate('4')}}" value="{{$table->capacity}}" required>
@@ -42,7 +42,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class="form-group">
-                                <label class="input-label">{{translate('Select_Branch')}} 
+                                <label class="input-label">{{translate('Select_Branch')}}
                                 <span class="text-danger">*</span></label>
                                 <select name="branch_id" class="custom-select" required>
                                     <option disabled selected>{{ translate('--select_Branch--') }}</option>
@@ -59,7 +59,7 @@
                     </div>
                 </form>
             </div>
-        </div>    
+        </div>
     </div>
 
 @endsection

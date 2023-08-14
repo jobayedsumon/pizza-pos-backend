@@ -25,19 +25,19 @@ class EmployeeController extends Controller
         $request->validate([
             'name' => 'required',
             'role_id' => 'required',
-            'image' => 'required',
-            'email' => 'required|email|unique:admins',
-            'password'=>'required',
-            'phone'=>'required',
-            'identity_image'=>'required',
-            'identity_type'=>'required',
-            'identity_number'=>'required',
-            'confirm_password' => 'same:password'
+//            'image' => 'required',
+//            'email' => 'required|email|unique:admins',
+//            'password'=>'required',
+//            'phone'=>'required',
+//            'identity_image'=>'required',
+//            'identity_type'=>'required',
+//            'identity_number'=>'required',
+//            'confirm_password' => 'same:password'
         ], [
             'name.required' => translate('Role name is required!'),
             'role_name.required' => translate('Role id is Required'),
-            'email.required' => translate('Email id is Required'),
-            'image.required' => translate('Image is Required'),
+//            'email.required' => translate('Email id is Required'),
+//            'image.required' => translate('Image is Required'),
 
         ]);
 
@@ -56,6 +56,12 @@ class EmployeeController extends Controller
             $identity_image = json_encode([]);
         }
 
+        if (!empty($request->file('image'))) {
+            $image = Helpers::upload('admin/', 'png', $request->file('image'));
+        } else {
+            $image = null;
+        }
+
         Admin::insert([
             'f_name' => $request->name,
             'phone' => $request->phone,
@@ -64,9 +70,9 @@ class EmployeeController extends Controller
             'identity_number' => $request->identity_number,
             'identity_type' => $request->identity_type,
             'identity_image' => $identity_image,
-            'password' => bcrypt($request->password),
+            'password' => $request->password ? bcrypt($request->password) : null,
             'status'=>1,
-            'image' => Helpers::upload('admin/', 'png', $request->file('image')),
+            'image' => $image,
             'created_at' => now(),
             'updated_at' => now(),
         ]);

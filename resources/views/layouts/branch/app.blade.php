@@ -14,11 +14,11 @@
     <!-- Font -->
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&amp;display=swap" rel="stylesheet">
     <!-- CSS Implementing Plugins -->
-    <link rel="stylesheet" href="{{asset('public/assets/admin')}}/css/vendor.min.css">
-    <link rel="stylesheet" href="{{asset('public/assets/admin')}}/vendor/icon-set/style.css">
+    <link rel="stylesheet" href="{{asset('public-assets/assets/admin')}}/css/vendor.min.css">
+    <link rel="stylesheet" href="{{asset('public-assets/assets/admin')}}/vendor/icon-set/style.css">
     <!-- CSS Front Template -->
-    <link rel="stylesheet" href="{{asset('public/assets/admin')}}/css/theme.minc619.css?v=1.0">
-    <link rel="stylesheet" href="{{asset('public/assets/admin')}}/css/style.css?v=1.0">
+    <link rel="stylesheet" href="{{asset('public-assets/assets/admin')}}/css/theme.minc619.css?v=1.0">
+    <link rel="stylesheet" href="{{asset('public-assets/assets/admin')}}/css/style.css?v=1.0">
     @stack('css_or_js')
 
     <style>
@@ -111,8 +111,8 @@
     </style>
 
     <script
-        src="{{asset('public/assets/admin')}}/vendor/hs-navbar-vertical-aside/hs-navbar-vertical-aside-mini-cache.js"></script>
-    <link rel="stylesheet" href="{{asset('public/assets/admin')}}/css/toastr.css">
+        src="{{asset('public-assets/assets/admin')}}/vendor/hs-navbar-vertical-aside/hs-navbar-vertical-aside-mini-cache.js"></script>
+    <link rel="stylesheet" href="{{asset('public-assets/assets/admin')}}/css/toastr.css">
 </head>
 
 <body class="footer-offset">
@@ -123,7 +123,7 @@
         <div class="col-md-12">
             <div id="loading" style="display: none;">
                 <div style="position: fixed;z-index: 9999; left: 40%;top: 37% ;width: 100%">
-                    <img width="200" src="{{asset('public/assets/admin/img/loader.gif')}}">
+                    <img width="200" src="{{asset('public-assets/assets/admin/img/loader.gif')}}">
                 </div>
             </div>
         </div>
@@ -137,7 +137,7 @@
 
 <!-- JS Preview mode only -->
 @include('layouts.branch.partials._header')
-@include('layouts.branch.partials._sidebar')
+{{--@include('layouts.branch.partials._sidebar')--}}
 <!-- END ONLY DEV -->
 
 <main id="content" role="main" class="main pointer-event">
@@ -167,16 +167,16 @@
 <!-- ========== END MAIN CONTENT ========== -->
 
 <!-- ========== END SECONDARY CONTENTS ========== -->
-<script src="{{asset('public/assets/admin')}}/js/custom.js"></script>
+<script src="{{asset('public-assets/assets/admin')}}/js/custom.js"></script>
 <!-- JS Implementing Plugins -->
 
 @stack('script')
 
 <!-- JS Front -->
-<script src="{{asset('public/assets/admin')}}/js/vendor.min.js"></script>
-<script src="{{asset('public/assets/admin')}}/js/theme.min.js"></script>
-<script src="{{asset('public/assets/admin')}}/js/sweet_alert.js"></script>
-<script src="{{asset('public/assets/admin')}}/js/toastr.js"></script>
+<script src="{{asset('public-assets/assets/admin')}}/js/vendor.min.js"></script>
+<script src="{{asset('public-assets/assets/admin')}}/js/theme.min.js"></script>
+<script src="{{asset('public-assets/assets/admin')}}/js/sweet_alert.js"></script>
+<script src="{{asset('public-assets/assets/admin')}}/js/toastr.js"></script>
 {!! Toastr::message() !!}
 
 @if ($errors->any())
@@ -214,7 +214,7 @@
 
 @stack('script_2')
 <audio id="myAudio">
-    <source src="{{asset('public/assets/admin/sound/notification.mp3')}}" type="audio/mpeg">
+    <source src="{{asset('public-assets/assets/admin/sound/notification.mp3')}}" type="audio/mpeg">
 </audio>
 
 <script>
@@ -366,6 +366,14 @@
             },
         });
 
+        $.get({
+            url: '{{route('branch.orders.orders-modal','pay_pickup')}}',
+            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+            success: function (response) {
+                $('#pay-pickup-table').html(response)
+            },
+        });
+
         $('body').on('submit','.delivery-menu-form-data', function (e) {
             e.preventDefault()
 
@@ -407,6 +415,8 @@
                         $('#delivery-menu-table').html(response)
                     } else if(status === 'delivered'){
                         $('#orders-delivered-table').html(response)
+                    } else if(status === 'pay_pickup'){
+                        $('#pay-pickup-table').html(response)
                     }
                 },
             });
@@ -685,7 +695,7 @@ url: '{{url('/')}}/branch/orders/ajax-change-delivery-time-date/{{$order['id']}}
 
 <!-- IE Support -->
 <script>
-    if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) document.write('<script src="{{asset('public/assets/admin')}}/vendor/babel-polyfill/polyfill.min.js"><\/script>');
+    if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) document.write('<script src="{{asset('public-assets/assets/admin')}}/vendor/babel-polyfill/polyfill.min.js"><\/script>');
 </script>
 </body>
 </html>

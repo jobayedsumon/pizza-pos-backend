@@ -8,11 +8,11 @@
                     @php($restaurant_logo=\App\Model\BusinessSetting::where(['key'=>'logo'])->first()->value)
                     <a class="navbar-brand" href="{{route('admin.dashboard')}}" aria-label="Front">
                         <img class="navbar-brand-logo" style="object-fit: contain;"
-                             onerror="this.src='{{asset('public/assets/admin/img/160x160/img2.jpg')}}'"
+                             onerror="this.src='{{asset('public-assets/assets/admin/img/160x160/img2.jpg')}}'"
                              src="{{asset('storage/app/public/restaurant/'.$restaurant_logo)}}"
                              alt="Logo">
                         <img class="navbar-brand-logo-mini" style="object-fit: contain;"
-                             onerror="this.src='{{asset('public/assets/admin/img/160x160/img2.jpg')}}'"
+                             onerror="this.src='{{asset('public-assets/assets/admin/img/160x160/img2.jpg')}}'"
                              src="{{asset('storage/app/public/restaurant/'.$restaurant_logo)}}" alt="Logo">
                     </a>
                     <!-- End Logo -->
@@ -69,7 +69,8 @@
                                 <ul class="js-navbar-vertical-aside-submenu nav nav-sub"
                                     style="display: {{Request::is('admin/pos*')?'block':'none'}}">
                                     <li class="nav-item {{Request::is('admin/pos')?'active':''}}">
-                                        <a class="nav-link " href="{{route('admin.pos.index')}}"
+                                        <a class="nav-link " href="{{route('branch.pos.index')}}"
+                                           target="_blank"
                                            title="{{translate('pos')}}">
                                             <span class="tio-circle nav-indicator-icon"></span>
                                             <span class="text-truncate">{{translate('New_Sale')}}</span>

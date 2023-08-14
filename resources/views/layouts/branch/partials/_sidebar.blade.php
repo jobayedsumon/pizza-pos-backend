@@ -1,4 +1,4 @@
-<div id="sidebarMain" class="d-none">
+<div id="sidebarMain" class="">
     <aside class="js-navbar-vertical-aside navbar navbar-vertical-aside navbar-vertical navbar-vertical-fixed navbar-expand-xl navbar-bordered  ">
 
         <ul class="navbar-nav navbar-nav-lg nav-tabs">
@@ -27,11 +27,11 @@
 
                     <a class="navbar-brand" href="{{route('branch.dashboard')}}" aria-label="Front">
                         <img class="navbar-brand-logo" style="object-fit: contain;"
-                             onerror="this.src='{{asset('public/assets/admin/img/160x160/img2.jpg')}}'"
+                             onerror="this.src='{{asset('public-assets/assets/admin/img/160x160/img2.jpg')}}'"
                              src="{{asset('storage/app/public/restaurant/'.$restaurant_logo)}}"
                              alt="Logo">
                         <img class="navbar-brand-logo-mini" style="object-fit: contain;"
-                             onerror="this.src='{{asset('public/assets/admin/img/160x160/img2.jpg')}}'"
+                             onerror="this.src='{{asset('public-assets/assets/admin/img/160x160/img2.jpg')}}'"
                              src="{{asset('storage/app/public/restaurant/'.$restaurant_logo)}}" alt="Logo">
                     </a>
 

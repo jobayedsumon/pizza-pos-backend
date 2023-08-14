@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
-    
+
     protected $guarded = [];
-    
+
     protected $casts = [
         'order_amount' => 'float',
         'coupon_discount_amount' => 'float',
@@ -56,6 +56,11 @@ class Order extends Model
     public function table()
     {
         return $this->belongsTo(Table::class, 'table_id', 'id');
+    }
+
+    public function taken_by()
+    {
+        return $this->belongsTo(Admin::class, 'order_taken_by', 'id');
     }
 
     public function scopePos($query)

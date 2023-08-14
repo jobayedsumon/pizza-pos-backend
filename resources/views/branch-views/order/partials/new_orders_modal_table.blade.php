@@ -6,7 +6,7 @@
         </h2>
 
         {{--<h2 class="h1 mb-0 d-flex align-items-center gap-1">
-            <img width="20" class="avatar-img" src="{{asset('public/assets/admin/img/icons/all_orders.png')}}" alt="">
+            <img width="20" class="avatar-img" src="{{asset('public-assets/assets/admin/img/icons/all_orders.png')}}" alt="">
             <span class="page-header-title">
                 {{translate($status)}} {{translate('Orders')}}
                 </span>
@@ -81,7 +81,7 @@
                         <ul class="dropdown-menu dropdown-menu-right">
                             <li>
                                 <a type="submit" class="dropdown-item d-flex align-items-center gap-2" href="{{route('branch.orders.export-excel')}}">
-                                    <img width="14" src="{{asset('public/assets/admin/img/icons/excel.png')}}" alt="">
+                                    <img width="14" src="{{asset('public-assets/assets/admin/img/icons/excel.png')}}" alt="">
                                     {{translate('Excel')}}
                                 </a>
                             </li>
