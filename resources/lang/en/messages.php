@@ -2338,4 +2338,6 @@
   'easi_paid_online' => 'Easi - Paid Online',
   'easi_account' => 'Easi - Account',
   'Gift Vouchers' => 'Gift Vouchers',
+  'Please select order taken by' => 'Please select order taken by',
+  'Error' => 'Error',
 );

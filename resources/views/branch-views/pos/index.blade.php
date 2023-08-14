@@ -800,6 +800,17 @@
     // });
 
     $('#order_place').submit(function(eventObj) {
+
+        if(!$('#order_taken_by').val()) {
+            eventObj.preventDefault();
+            Swal.fire({
+                icon: 'error',
+                title: '{{translate("Error")}}',
+                text: '{{translate('Please select order taken by')}}'
+            });
+            return false;
+        }
+
         if($('#customer').val())
         {
             $(this).append('<input type="hidden" name="user_id" value="'+$('#customer').val()+'" /> ');
