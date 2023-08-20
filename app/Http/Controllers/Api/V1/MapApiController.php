@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\CentralLogics\Helpers;
 use App\Http\Controllers\Controller;
+use App\Model\Branch;
 use App\Model\BusinessSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -20,7 +21,8 @@ class MapApiController extends Controller
             return response()->json(['errors' => Helpers::error_processor($validator)], 403);
         }
         $api_key = Helpers::get_business_settings('map_api_key');
-        $response = Http::get('https://maps.googleapis.com/maps/api/place/autocomplete/json?input=' . $request['search_text'] . '&key=' . $api_key);
+        $main_branch = Branch::find(1);
+        $response = Http::get('https://maps.googleapis.com/maps/api/place/autocomplete/json?location='.@$main_branch->latitude.','.@$main_branch->longitude.'&radius='.(@$main_branch->coverage*1000).'&input=' . $request['search_text'] . '&key=' . $api_key);
         return $response->json();
     }
 
