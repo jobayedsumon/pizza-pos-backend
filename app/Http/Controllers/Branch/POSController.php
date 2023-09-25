@@ -118,11 +118,19 @@ class POSController extends Controller
             $count = count(json_decode($product->variations));
             for ($i = 0; $i < $count; $i++) {
                 if (json_decode($product->variations)[$i]->type == $str) {
-                    $price = json_decode($product->variations)[$i]->price - Helpers::discount_calculate($product, $product->price);
+                    if ($request->half_half) {
+                        $price = (HALF_HALF_PRICE - Helpers::discount_calculate($product, HALF_HALF_PRICE)) * 2;
+                    } else {
+                        $price = json_decode($product->variations)[$i]->price - Helpers::discount_calculate($product, $product->price);
+                    }
                 }
             }
         } else {
-            $price = $product->price - Helpers::discount_calculate($product, $product->price);
+            if ($request->half_half) {
+                $price = (HALF_HALF_PRICE - Helpers::discount_calculate($product, HALF_HALF_PRICE)) * 2;
+            } else {
+                $price = $product->price - Helpers::discount_calculate($product, $product->price);
+            }
         }
 
         return array('price' => Helpers::set_symbol(($price * $quantity) + $addon_price));
@@ -265,11 +273,19 @@ class POSController extends Controller
             $count = count(json_decode($product->variations));
             for ($i = 0; $i < $count; $i++) {
                 if (json_decode($product->variations)[$i]->type == $str) {
-                    $price = json_decode($product->variations)[$i]->price;
+                    if ($request->half_half) {
+                        $price = HALF_HALF_PRICE * 2;
+                    } else {
+                        $price = json_decode($product->variations)[$i]->price;
+                    }
                 }
             }
         } else {
-            $price = $product->price;
+            if ($request->half_half) {
+                $price = HALF_HALF_PRICE * 2;
+            } else {
+                $price = $product->price;
+            }
         }
 
         $data['quantity'] = $quantity;

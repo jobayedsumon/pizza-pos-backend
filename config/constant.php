@@ -1523,3 +1523,5 @@ const COUNTRY =[
         "flag": "https://cdn.kcak11.com/CountryFlags/countries/zw.svg"
     }
 ]*/
+
+const HALF_HALF_PRICE = 22;
