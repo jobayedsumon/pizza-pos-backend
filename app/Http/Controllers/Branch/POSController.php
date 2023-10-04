@@ -86,6 +86,8 @@ class POSController extends Controller
     {
         $product = Product::query()->findOrFail($request->product_id);
 
+
+
         return response()->json([
             'success' => 1,
             'view' => view('branch-views.pos._quick-view-data', compact('product'))->render(),

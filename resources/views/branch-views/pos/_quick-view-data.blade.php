@@ -93,17 +93,18 @@
 
                     <div class="product-quantity d-flex align-items-center">
 
-
-                        <div class="allergy-item flex-column mr-3">
-                            <input class="btn-check allergy-chek" type="checkbox"
-                                   id="half_half"
-                                   value="0.5"
-                                   name="half_half"
-                                   autocomplete="off">
-                            <label class="d-flex align-items-center btn btn-sm check-label p-3 allergy-input mb-0 h-100 break-all"
-                                   for="half_half">Half / Half
-                            </label>
-                        </div>
+                        @if(in_array(json_decode($product->category_ids)[0]->id, [1, 6]))
+                            <div class="allergy-item flex-column mr-3">
+                                <input class="btn-check allergy-chek" type="checkbox"
+                                       id="half_half"
+                                       value="0.5"
+                                       name="half_half"
+                                       autocomplete="off">
+                                <label class="d-flex align-items-center btn btn-sm check-label p-3 allergy-input mb-0 h-100 break-all"
+                                       for="half_half">Half / Half
+                                </label>
+                            </div>
+                        @endif
 
 
                         <div class="product-quantity-group d-flex align-items-center">
