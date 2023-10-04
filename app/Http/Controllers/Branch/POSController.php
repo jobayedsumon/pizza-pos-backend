@@ -119,7 +119,7 @@ class POSController extends Controller
             for ($i = 0; $i < $count; $i++) {
                 if (json_decode($product->variations)[$i]->type == $str) {
                     if ($request->half_half) {
-                        $price = (HALF_HALF_PRICE - Helpers::discount_calculate($product, HALF_HALF_PRICE)) * 2;
+                        $price = HALF_HALF_PRICE - Helpers::discount_calculate($product, HALF_HALF_PRICE);
                     } else {
                         $price = json_decode($product->variations)[$i]->price - Helpers::discount_calculate($product, $product->price);
                     }
@@ -127,7 +127,7 @@ class POSController extends Controller
             }
         } else {
             if ($request->half_half) {
-                $price = (HALF_HALF_PRICE - Helpers::discount_calculate($product, HALF_HALF_PRICE)) * 2;
+                $price = HALF_HALF_PRICE - Helpers::discount_calculate($product, HALF_HALF_PRICE);
             } else {
                 $price = $product->price - Helpers::discount_calculate($product, $product->price);
             }
@@ -274,7 +274,7 @@ class POSController extends Controller
             for ($i = 0; $i < $count; $i++) {
                 if (json_decode($product->variations)[$i]->type == $str) {
                     if ($request->half_half) {
-                        $price = HALF_HALF_PRICE * 2;
+                        $price = HALF_HALF_PRICE;
                     } else {
                         $price = json_decode($product->variations)[$i]->price;
                     }
@@ -282,7 +282,7 @@ class POSController extends Controller
             }
         } else {
             if ($request->half_half) {
-                $price = HALF_HALF_PRICE * 2;
+                $price = HALF_HALF_PRICE;
             } else {
                 $price = $product->price;
             }
