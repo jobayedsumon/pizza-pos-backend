@@ -132,7 +132,7 @@
                                     </div>
 
                                     {{--                                    <div class="d-flex gap-3 justify-content-sm-end align-items-center mb-3">--}}
-                                    @if($order['transaction_reference']==null && $order['order_type']!='pos')
+                                    @if($order['transaction_reference']==null)
                                         <div class="d-flex gap-3 justify-content-sm-end align-items-center mb-3">
                                             {{translate('reference')}} {{translate('code')}} :
                                             <button class="btn btn-outline-primary px-3 py-1" data-toggle="modal"
@@ -140,7 +140,7 @@
                                                 {{translate('add')}}
                                             </button>
                                         </div>
-                                    @elseif($order['order_type']!='pos')
+                                    @else
                                         <div class="d-flex gap-3 justify-content-sm-end align-items-center mb-3">
                                             {{translate('reference')}} {{translate('code')}}
                                             : {{$order['transaction_reference']}}

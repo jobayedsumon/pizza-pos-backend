@@ -313,13 +313,13 @@
                                     </h5>
 
                                     <h5 class="d-flex gap-3 justify-content-sm-end align-items-center mb-3">
-                                        @if($order['transaction_reference']==null && $order['order_type']!='pos')
+                                        @if($order['transaction_reference']==null)
                                             {{translate('reference')}} {{translate('code')}} :
                                             <button class="btn btn-outline-primary btn-sm" data-toggle="modal"
                                                     data-target=".bd-example-modal-sm">
                                                 {{translate('add')}}
                                             </button>
-                                        @elseif($order['order_type']!='pos')
+                                        @else
                                             {{translate('reference')}} {{translate('code')}}
                                             : {{$order['transaction_reference']}}
                                         @endif
