@@ -218,7 +218,7 @@
                                             {{translate('Name')}}
                                             <span class="input-label-secondary text-danger">*</span>
                                         </label>
-                                        <input type="text" name="f_name" class="form-control" value="" placeholder="First name" required="">
+                                        <input type="text" name="f_name" class="form-control mt-4" value="" placeholder="Name" required="">
                                     </div>
                                 </div>
 {{--                                <div class="col-12 col-lg-6">--}}
@@ -245,10 +245,11 @@
                                     <div class="form-group">
                                         <label class="input-label">
                                             {{translate('Phone')}}
-                                            ({{translate('with_country_code')}})
+                                            ({{translate('+61')}})
                                             <span class="input-label-secondary text-danger">*</span>
                                         </label>
-                                        <input type="text" name="phone" class="form-control" value="" placeholder="Phone" required="">
+                                        <small>Put 0 first and total 10 digits.</small>
+                                        <input type="number" name="phone" class="form-control" value="" placeholder="Phone" required="" >
                                     </div>
                                 </div>
                             </div>
@@ -373,7 +374,7 @@
         });
 
         $.get({
-            url: '{{route('branch.orders.orders-modal-customer')}}' + '?customer_id=' + value,
+            url: '{{route('branch.orders.orders-modal', 'customer')}}' + '?customer_id=' + value,
             headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
             success: function (response) {
                 $('#orders-customer-table').html(response)

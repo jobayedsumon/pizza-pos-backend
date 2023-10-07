@@ -38,7 +38,7 @@
             @foreach($cart as $key => $cartItem)
                 @if(is_array($cartItem))
                         <?php
-                        $product_subtotal = ($cartItem['price'])*$cartItem['quantity'];
+                        $product_subtotal = $cartItem['quantity'] * ($cartItem['quantity'] == 0.5 ? HALF_HALF_PRICE : $cartItem['price']);
                         $discount_on_product += ($cartItem['discount']*$cartItem['quantity']);
                         $subtotal += $product_subtotal;
                         $addon_price += $cartItem['addon_price'];

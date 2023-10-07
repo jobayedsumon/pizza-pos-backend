@@ -33,7 +33,7 @@
                             </div>
                         </div>
                         <div class="col-sm-12 col-md-4">
-                            <button type="submit" class="btn btn-primary btn-block">{{translate('show_data')}}</button>
+                            <button type="submit" class="btn btn-primary btn-block showDataButton">{{translate('show_data')}}</button>
                         </div>
                     </div>
                 </form>
@@ -41,22 +41,22 @@
 
             <div class="card-body">
                 <div class="row justify-content-between align-items-center gy-2">
-                    <div class="col-sm-8 col-md-6 col-lg-4">
+                    <div class="col-sm-10 col-md-8 col-lg-6">
                         <form class="delivery-menu-form-data">
                             <div class="input-group">
                                 <input id="datatableSearch_" type="search" name="search"
                                        class="form-control"
                                        placeholder="{{translate('Search by ID, customer or payment status')}}" aria-label="Search"
-                                       value="{{$search}}" required autocomplete="off">
+                                       value="{{$search}}" autocomplete="off">
                                 <div class="input-group-append">
-                                    <button type="submit" class="btn btn-primary">
+                                    <button type="submit" class="btn btn-primary searchDataButton">
                                         {{translate('Search')}}
                                     </button>
                                 </div>
                             </div>
                         </form>
                     </div>
-                    <div class="col-sm-4 col-md-6 col-lg-8 d-flex justify-content-end">
+                    <div class="col-sm-2 col-md-4 col-lg-6 d-flex justify-content-end">
                         <div>
                             <a type="submit" class="btn btn-outline-primary" href="{{route('branch.orders.export-excel-pos')}}">
                                 <img width="14" src="{{asset('public-assets/assets/admin/img/icons/excel.png')}}" alt="">

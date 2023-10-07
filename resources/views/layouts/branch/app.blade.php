@@ -697,5 +697,22 @@ url: '{{url('/')}}/branch/orders/ajax-change-delivery-time-date/{{$order['id']}}
 <script>
     if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent)) document.write('<script src="{{asset('public-assets/assets/admin')}}/vendor/babel-polyfill/polyfill.min.js"><\/script>');
 </script>
+
+<script>
+    var modals = ['pos-orders-modal', 'orders-delivered-modal',
+        'orders-out-for-delivery-modal', 'orders-confirmed-modal',
+        'orders-all-modal', 'delivery-menu-modal',
+        'pay-pickup-modal', 'orders-customer-modal'];
+
+    modals.forEach(function (modal) {
+       $(`#${modal}`).on('shown.bs.modal', function (event) {
+           $(this).find('.showDataButton').click();
+           if ($(this).find('#datatableSearch_').val()) {
+               $(this).find('.searchDataButton').click();
+           }
+       });
+    });
+</script>
+
 </body>
 </html>

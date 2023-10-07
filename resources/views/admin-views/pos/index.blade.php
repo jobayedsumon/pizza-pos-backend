@@ -762,7 +762,7 @@
             });
 
             $.get({
-                url: '{{route('branch.orders.orders-modal-customer')}}' + '?customer_id=' + value,
+                url: '{{route('branch.orders.orders-modal', 'customer')}}' + '?customer_id=' + value,
                 headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                 success: function (response) {
                     $('#orders-customer-table').html(response)

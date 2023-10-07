@@ -56,7 +56,6 @@ Route::group(['namespace' => 'Branch', 'as' => 'branch.'], function () {
 
         Route::group(['prefix' => 'orders', 'as' => 'orders.'], function () {
             Route::get('list/{status}', 'OrderController@list')->name('list');
-            Route::get('orders-modal/customer', 'OrderController@orders_modal_customer')->name('orders-modal-customer');
             Route::any('orders-modal/{status}', 'OrderController@orders_modal')->name('orders-modal');
             Route::get('unchecked-orders-modal/{status}', 'OrderController@unchecked_orders_modal')->name('unchecked-orders-modal');
             Route::post('order-details-modal', 'OrderController@order_details_modal')->name('order-details-modal');

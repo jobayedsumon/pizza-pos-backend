@@ -2340,4 +2340,5 @@
   'Gift Vouchers' => 'Gift Vouchers',
   'Please select order taken by' => 'Please select order taken by',
   'Error' => 'Error',
+  '+61' => '+61',
 );

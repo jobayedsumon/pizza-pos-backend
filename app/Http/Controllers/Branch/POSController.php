@@ -508,6 +508,8 @@ class POSController extends Controller
 
         $orders = $query->latest()/*->paginate(Helpers::getPagination())*/->take(200)->get();
 
+        session()->put('order_data_export', $orders);
+
         return view('branch-views.pos.order.partials.delivery_menu_table', compact('orders','search', 'from', 'to'));
     }
 
@@ -893,19 +895,25 @@ class POSController extends Controller
         $request->validate([
             'f_name' => 'required',
 //            'l_name' => 'required',
-            'phone' => 'required|unique:users',
+            'phone' => 'required|unique:users|regex:/^0\d{9}$/',
             'email' => 'nullable|email|unique:users',
 
         ]);
-        $user = User::query()->create([
-            'f_name' => $request->f_name,
-            'l_name' => $request->l_name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'password' => bcrypt('password'),
-        ]);
-        Toastr::success(translate('customer added successfully'));
-        return back();
+
+        $phone = $request->phone;
+
+        if(strlen($phone) == 10 && is_numeric($phone) && $phone[0] == 0) {
+            $phone = '+61' . substr($phone, 1);
+            $user = User::query()->create([
+                'f_name' => $request->f_name,
+                'l_name' => $request->l_name,
+                'email' => $request->email,
+                'phone' => $phone,
+                'password' => bcrypt($phone),
+            ]);
+            Toastr::success(translate('customer added successfully'));
+            return back();
+        }
     }
 
     public function store_keys(Request $request)
