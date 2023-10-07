@@ -292,6 +292,7 @@ class OrderController extends Controller
         }
 
         session()->put('order_data_export', $orders);
+        session()->put('customer_id', $request->customer_id);
 
         return view('branch-views.order.partials.modal_table', compact('orders', 'status', 'search', 'from', 'to', 'order_count'));
     }

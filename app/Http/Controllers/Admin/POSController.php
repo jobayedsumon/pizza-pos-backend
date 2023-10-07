@@ -56,7 +56,7 @@ class POSController extends Controller
         $branches = Branch::select('id', 'name')->get();
         $pos_role = AdminRole::where('name', 'pos')->first();
         $employees = Admin::where('admin_role_id', $pos_role->id)->select('id', 'f_name')->get();
-        session()->forget('order_taken_by');
+
         return view('admin-views.pos.index', compact('categories', 'products', 'category', 'keyword', 'current_branch', 'branches', 'selected_customer', 'selected_table', 'employees'));
     }
 

@@ -78,7 +78,6 @@ class POSController extends Controller
         } else {
             $employees = [];
         }
-        session()->forget('order_taken_by');
         return view('branch-views.pos.index', compact('categories', 'products', 'category', 'keyword', 'branch', 'tables', 'selected_table', 'selected_customer', 'employees'));
     }
 
@@ -801,7 +800,6 @@ class POSController extends Controller
             session()->forget('branch_id');
             session()->forget('table_id');
             session()->forget('people_number');
-            session()->forget('order_taken_by');
 
             if ($request->has('save')) {
                 session(['last_order' => false]);
