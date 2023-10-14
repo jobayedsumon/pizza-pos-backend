@@ -122,11 +122,13 @@
                                     @if(count(json_decode($detail['variation'],true))>0)
                                         <strong><u>{{translate('Variation')}} : </u></strong>
                                         @foreach(json_decode($detail['variation'],true)[0] as $key1 =>$variation)
+                                            @if($key1 == 'price' && $detail['quantity'] != 0.5)
                                             <div class="font-size-sm text-body" style="color: black!important;">
                                                 <span>{{$key1}} :  </span>
                                                 <span
                                                     class="font-weight-bold">{{$variation}} {{$key1=='price'?\App\CentralLogics\Helpers::currency_symbol():''}}</span>
                                             </div>
+                                            @endif
                                         @endforeach
                                     @endif
 
@@ -168,7 +170,7 @@
                                     {{translate('Discount')}} : {{ \App\CentralLogics\Helpers::set_symbol($detail['discount_on_product']*$detail['quantity']) }}
                                 </td>
                                 <td style="width: 28%;padding-right:4px; text-align:right">
-                                    @php($amount=(($detail['price']-$detail['discount_on_product'])*$detail['quantity'] + $addonSubTotal))
+                                    @php($amount=(($detail['quantity'] == 0.5 ? HALF_HALF_PRICE : $detail['price']) - $detail['discount_on_product']) * $detail['quantity'] + $addonSubTotal)
                                     {{ \App\CentralLogics\Helpers::set_symbol($amount) }}
                                 </td>
                             </tr>

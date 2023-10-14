@@ -183,10 +183,10 @@
                                         <a class="btn btn-sm btn-outline-primary square-btn" href="{{route('admin.pos.order-details',['id'=>$order['id']])}}">
                                             <i class="tio-invisible"></i>
                                         </a>
-                                        <button class="btn btn-sm btn-outline-success square-btn" target="_blank" type="button"
-                                                onclick="print_invoice('{{$order->id}}')"><i
+                                        <a class="btn btn-sm btn-outline-success square-btn" target="_blank" type="button"
+                                           href="{{route('admin.orders.generate-invoice',[$order['id']])}}"><i
                                                 class="tio-print"></i>
-                                        </button>
+                                        </a>
                                     </div>
                                 </td>
                             </tr>

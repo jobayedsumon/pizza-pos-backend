@@ -208,13 +208,13 @@
                                                             <u><strong>{{translate('variation')}}</strong></u>
                                                             @foreach(json_decode($detail['variation'],true)[0] as $key1 =>$variation)
                                                                     <div class="font-size-sm text-body">
-                                                                @if(isset($variation_det[0]['type']))
-                                                                            <span class="text-dark text-capitalize">{{$key1}} :  </span>
-                                                                            <span class="text-dark">{{ $key1 == 'price' ?  Helpers::set_symbol($variation) : $variation }}</span>
-                                                                        @elseif(isset($variation_det[0]['price']))
-                                                                            <span class="text-dark text-capitalize">{{$key1}} :  </span>
-                                                                            <span class="text-dark">{{ $key1 == 'price' ?  Helpers::set_symbol($variation) : $variation }}</span>
-                                                                        @endif
+                                                                @if($key1 == 'price' && $detail['quantity'] != 0.5)
+                                                                    <span class="text-dark text-capitalize">{{$key1}} :  </span>
+                                                                    <span class="text-dark">{{ Helpers::set_symbol($variation) }}</span>
+                                                                @elseif($key1 != 'price')
+                                                                    <span class="text-dark text-capitalize">{{$key1}} :  </span>
+                                                                    <span class="text-dark">{{$variation}}</span>
+                                                                @endif
                                                             </div>
                                                                 @endforeach
                                                             </span>
