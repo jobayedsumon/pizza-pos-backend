@@ -29,32 +29,33 @@ class CustomerAuthController extends Controller
             'phone' => 'required|min:10|max:10|regex:/^0\d{9}$/|unique:users'
         ]);
 
-        if(strlen($request['phone']) == 10 && is_numeric($request['phone']) && $request['phone'][0] == 0) {
-            $request['phone'] = '+61' . substr($request['phone'], 1);
-        }
-
         if ($validator->fails()) {
             return response()->json(['errors' => Helpers::error_processor($validator)], 403);
         }
 
-        if (BusinessSetting::where(['key' => 'phone_verification'])->first()->value) {
-            $token = rand(1000, 9999);
-            DB::table('phone_verifications')->insert([
-                'phone' => $request['phone'],
-                'token' => $token,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-            $response = SMS_module::send($request['phone'], $token);
-            return response()->json([
-                'message' => $response,
-                'token' => 'active'
-            ], 200);
-        } else {
-            return response()->json([
-                'message' => translate('Number is ready to register'),
-                'token' => 'inactive'
-            ], 200);
+        if(strlen($request['phone']) == 10 && is_numeric($request['phone']) && $request['phone'][0] == 0) {
+
+            $request['phone'] = '+61' . substr($request['phone'], 1);
+
+            if (BusinessSetting::where(['key' => 'phone_verification'])->first()->value) {
+                $token = rand(1000, 9999);
+                DB::table('phone_verifications')->insert([
+                    'phone' => $request['phone'],
+                    'token' => $token,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+                $response = SMS_module::send($request['phone'], $token);
+                return response()->json([
+                    'message' => $response,
+                    'token' => 'active'
+                ], 200);
+            } else {
+                return response()->json([
+                    'message' => translate('Number is ready to register'),
+                    'token' => 'inactive'
+                ], 200);
+            }
         }
     }
 
