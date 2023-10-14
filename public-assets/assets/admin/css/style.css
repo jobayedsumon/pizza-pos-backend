@@ -6,6 +6,11 @@
   --tc: #334257;
 }
 
+label:has(+ input:required):after {
+    content: ' *';
+    color: red;
+}
+
 /* Redesign CSS */
 .navbar-dropdown-lg {
   width: 16rem;

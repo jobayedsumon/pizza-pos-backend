@@ -87,6 +87,15 @@
                                             <div class="row" id="coba"></div>
                                         </div>
                                     </div>
+
+                                    <div class="form-group">
+                                    @foreach(json_decode($delivery_man['identity_image'],true) as $img)
+                                            <img height="150"
+                                                 class="upload-img-view"
+                                                 onerror="this.src='{{asset('public-assets/assets/admin/img/160x160/img2.jpg')}}'"
+                                                 src="{{asset('storage/app/public/delivery-man').'/'.$img}}">
+                                    @endforeach
+                                    </div>
                                 </div>
 
                                 <div class="col-md-6">
@@ -122,14 +131,6 @@
                                                 src="{{asset('storage/app/public/delivery-man').'/'.$delivery_man['image']}}" alt="delivery-man image"/>
                                         </center>
                                     </div>
-
-                                    @foreach(json_decode($delivery_man['identity_image'],true) as $img)
-                                    <!-- <div class="form-group">
-                                        <img height="150"
-                                            onerror="this.src='{{asset('public-assets/assets/admin/img/160x160/img2.jpg')}}'"
-                                            src="{{asset('storage/app/public/delivery-man').'/'.$img}}">
-                                    </div> -->
-                                    @endforeach
                                 </div>
                             </div>
                         </div>
