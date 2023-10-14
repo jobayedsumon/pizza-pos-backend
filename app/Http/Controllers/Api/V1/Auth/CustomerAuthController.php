@@ -23,9 +23,15 @@ class CustomerAuthController extends Controller
 {
     public function check_phone(Request $request)
     {
+        $request['phone'] = substr($request['phone'], -10);
+
         $validator = Validator::make($request->all(), [
-            'phone' => 'required|min:11|max:14|unique:users'
+            'phone' => 'required|min:10|max:10|regex:/^0\d{9}$/|unique:users'
         ]);
+
+        if(strlen($request['phone']) == 10 && is_numeric($request['phone']) && $request['phone'][0] == 0) {
+            $request['phone'] = '+61' . substr($request['phone'], 1);
+        }
 
         if ($validator->fails()) {
             return response()->json(['errors' => Helpers::error_processor($validator)], 403);

@@ -895,7 +895,7 @@ class POSController extends Controller
         $request->validate([
             'f_name' => 'required',
 //            'l_name' => 'required',
-            'phone' => 'required|unique:users|regex:/^0\d{9}$/',
+            'phone' => 'required|min:10|max:10|regex:/^0\d{9}$/|unique:users',
             'email' => 'nullable|email|unique:users',
 
         ]);
