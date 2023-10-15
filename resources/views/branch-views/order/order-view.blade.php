@@ -233,6 +233,7 @@
                                                     @endif
                                                     <br>
                                                     @php($addon_ids = json_decode($detail['add_on_ids'],true))
+                                                    @php($add_ons_cost=0)
                                                     @if ($addon_ids)
                                                         <span>
                                                         <u><strong>{{translate('addons')}}</strong></u>
@@ -242,7 +243,7 @@
                                                                 <div class="font-size-sm text-body">
                                                                     <span>{{$addon['name']}} :  </span>
                                                                     <span class="font-weight-semibold">
-                                                                        {{$add_on_qty}} x {{ \App\CentralLogics\Helpers::set_symbol($addon['price']) }}
+                                                                        {{$add_on_qty}}
                                                                     </span>
                                                                 </div>
                                                                 @php($add_ons_cost+=$addon['price']*$add_on_qty)
@@ -274,7 +275,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                        @php($amount=$detail['price']*$detail['quantity'])
+                                        @php($amount=($detail['quantity'] * ($detail['quantity'] == 0.5 ? HALF_HALF_PRICE : $detail['price'])) + $add_ons_cost)
                                         {{\App\CentralLogics\Helpers::set_symbol($amount)}}
                                     </td>
                                     <td>
