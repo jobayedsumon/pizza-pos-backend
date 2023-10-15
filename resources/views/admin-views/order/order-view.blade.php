@@ -276,7 +276,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                        @php($amount=($detail['price']*$detail['quantity']) + $addonSubtotal)
+                                        @php($amount=($detail['quantity'] * ($detail['quantity'] == 0.5 ? HALF_HALF_PRICE : $detail['price'])) + $addonSubtotal)
                                         {{\App\CentralLogics\Helpers::set_symbol($amount)}}
                                     </td>
                                     <td>
