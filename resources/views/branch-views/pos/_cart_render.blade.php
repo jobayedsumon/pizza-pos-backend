@@ -96,7 +96,7 @@
                             @if($cartItem['quantity'] == 0.5)
                                 <span class="badge badge-inline badge-soft-success">Half / Half</span>
                             @else
-                                <input type="number" class="form-control qty" data-key="{{$key}}" value="{{$cartItem['quantity']}}" min="1" onkeyup="updateQuantity(event)">
+                                <input type="number" class="form-control qty" data-key="{{$key}}" value="{{intval($cartItem['quantity'])}}" min="1" onkeyup="updateQuantity(event)">
                             @endif
                         </td>
                         <td>
