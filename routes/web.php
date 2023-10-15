@@ -37,9 +37,9 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');*/
 
 Route::get('test-email', function() {
-    $order_id = 37;
+    $order_id = 100177;
     $order = App\Model\Order::find($order_id);
-//    return view('email-templates.customer-order-placed', compact('order'));
+    return view('email-templates.customer-order-placed', compact('order'));
      Mail::to('sumonjobayed@gmail.com')->send(new \App\Mail\OrderPlaced($order_id));
 });
 

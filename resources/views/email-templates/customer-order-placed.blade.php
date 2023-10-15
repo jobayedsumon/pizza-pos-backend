@@ -81,8 +81,8 @@
             <tbody>
             @php($sub_total=0)
             @php($total_tax=0)
-            @php($total_dis_on_pro=0)
             @php($add_ons_cost=0)
+            @php($total_dis_on_pro=0)
             @foreach($order->details as $detail)
                 @if($detail->product)
                     @php($add_on_qtys=json_decode($detail['add_on_qtys'],true))
@@ -105,8 +105,13 @@
                                 <strong>{{translate('Variation : ')}}</strong>
                                 @foreach(json_decode($detail['variation'],true)[0] as $key1 =>$variation)
                                     <div style="color: black!important;">
-                                        <span style="text-transform: capitalize">{{$key1}} :  </span>
-                                        <span>{{ $key1 == 'price' ?  Helpers::set_symbol($variation) : $variation }}</span>
+                                        @if($key1 == 'price' && $detail['quantity'] != 0.5)
+                                            <span class="text-dark text-capitalize" style="text-transform: capitalize">{{$key1}} :  </span>
+                                            <span class="text-dark">{{ Helpers::set_symbol($variation) }}</span>
+                                        @elseif($key1 != 'price')
+                                            <span class="text-dark text-capitalize" style="text-transform: capitalize">{{$key1}} :  </span>
+                                            <span class="text-dark">{{$variation}}</span>
+                                        @endif
                                     </div>
                                 @endforeach
 
@@ -115,6 +120,7 @@
                             @endif
 
                             @if(json_decode($detail['add_on_ids'],true)>0)
+                                @php($add_ons_cost=0)
                             @foreach(json_decode($detail['add_on_ids'],true) as $key2 =>$id)
                                 @php($addon=\App\Model\AddOn::find($id))
                                 @if($key2==0)<strong>{{translate('Addons : ')}}</strong>@endif
@@ -128,7 +134,7 @@
                                 <div>
                                     <span>{{$addon['name']}} :  </span>
                                     <span>
-                                                {{$add_on_qty}} x {{ \App\CentralLogics\Helpers::set_symbol($addon['price']) }}
+                                                {{$add_on_qty}}
                                             </span>
                                 </div>
                                 @php($add_ons_cost+=$addon['price']*$add_on_qty)
@@ -157,12 +163,12 @@
                         </td>
 
                         <td style="text-align: center">
-                            {{$detail['quantity']}}
+                            {{ $detail['quantity'] == 0.5 ? 'Half' : intval($detail['quantity']) }}
                         </td>
 
                         <td style="text-align: right">
                             <span style="padding-right: 10px">
-                                @php($amount=($detail['price']-$detail['discount_on_product'])*$detail['quantity'])
+                                @php($amount=(($detail['quantity'] == 0.5 ? HALF_HALF_PRICE : $detail['price'])-$detail['discount_on_product'])*$detail['quantity'] + $add_ons_cost)
                                 {{ \App\CentralLogics\Helpers::set_symbol($amount) }}
                             </span>
 
@@ -185,19 +191,19 @@
                     <dd>{{ \App\CentralLogics\Helpers::set_symbol($sub_total) }}</dd>
                 </div>
                 <br>
-                <div style="display: inline-flex">
-                    <dt>{{translate('Tax / VAT:')}}</dt>
-                    <dd>{{ \App\CentralLogics\Helpers::set_symbol($total_tax) }}</dd>
-                </div>
-                <br>
-                <div style="display: inline-flex">
-                    <dt>{{translate('Addon Cost:')}}</dt>
-                    <dd>
-                        {{ \App\CentralLogics\Helpers::set_symbol($add_ons_cost) }}
-                    </dd>
-                </div>
+{{--                <div style="display: inline-flex">--}}
+{{--                    <dt>{{translate('Tax / VAT:')}}</dt>--}}
+{{--                    <dd>{{ \App\CentralLogics\Helpers::set_symbol($total_tax) }}</dd>--}}
+{{--                </div>--}}
+{{--                <br>--}}
+{{--                <div style="display: inline-flex">--}}
+{{--                    <dt>{{translate('Addon Cost:')}}</dt>--}}
+{{--                    <dd>--}}
+{{--                        {{ \App\CentralLogics\Helpers::set_symbol($add_ons_cost) }}--}}
+{{--                    </dd>--}}
+{{--                </div>--}}
 
-                <br>
+{{--                <br>--}}
 
                      <hr>
 
@@ -205,7 +211,7 @@
 
                         <dt>{{translate('Subtotal:')}}</dt>
                         <dd>
-                            {{ \App\CentralLogics\Helpers::set_symbol($sub_total+$total_tax+$add_ons_cost) }}</dd>
+                            {{ \App\CentralLogics\Helpers::set_symbol($sub_total+$total_tax) }}</dd>
 
                      </div>
                 <br>
@@ -240,7 +246,7 @@
 
                     <dt style="font-size: 20px">{{translate('Total:')}}</dt>
                     <dd style="font-size: 20px">
-                        {{ \App\CentralLogics\Helpers::set_symbol($sub_total+$del_c+$total_tax+$add_ons_cost-$order['coupon_discount_amount']-$order['extra_discount']) }}
+                        {{ \App\CentralLogics\Helpers::set_symbol($sub_total+$del_c+$total_tax-$order['coupon_discount_amount']-$order['extra_discount']) }}
                     </dd>
                 </div>
 

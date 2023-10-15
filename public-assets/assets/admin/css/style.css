@@ -11,6 +11,10 @@ label:has(+ input:required):after {
     color: red;
 }
 
+.text-capitalize {
+  text-transform: capitalize !important;
+}
+
 /* Redesign CSS */
 .navbar-dropdown-lg {
   width: 16rem;

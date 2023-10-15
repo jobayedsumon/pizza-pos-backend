@@ -82,9 +82,13 @@
                         <div class="col-12">
                             <h5>{{translate('Customer Name')}} : {{$order->customer['f_name'].' '.$order->customer['l_name']}}</h5>
                             <h5>{{translate('Phone')}} : {{$order->customer['phone']}}</h5>
+                            @php($address=\App\Model\CustomerAddress::find($order['delivery_address_id']))
+                            @if(!$address)
+                                @php($address = json_decode(json_encode(str_replace('/','',$order->delivery_address)),true))
+                            @endif
                             <h5>
                                 {{translate('Address')}}
-                                : {{isset($order->delivery_address)?json_decode($order->delivery_address, true)['address']:''}}
+                                : {{isset($address)?$address['address']:''}}
                             </h5>
                         </div>
                     @endif
