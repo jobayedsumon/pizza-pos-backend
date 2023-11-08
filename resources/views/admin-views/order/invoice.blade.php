@@ -88,7 +88,7 @@
                             @endif
                             <h5>
                                 {{translate('Address')}}
-                                : {{isset($address)?$address['address']:''}}
+                                : {{$address['address'] ?? ''}}
                             </h5>
                         </div>
                     @endif

@@ -57,7 +57,7 @@
                                 @php($address = json_decode(json_encode(str_replace('/','',$order->delivery_address)),true))
                             @endif
                             <h4 style="font-weight: lighter">
-                                {{translate('Address : ')}}<span>{{isset($address)?$address['address']:''}}</span>
+                                {{translate('Address : ')}}<span>{{$address['address'] ?? ''}}</span>
                             </h4>
                         @endif
                     </div>

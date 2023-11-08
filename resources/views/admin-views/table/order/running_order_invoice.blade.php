@@ -85,7 +85,7 @@
                             </h5>
                             @php($address=\App\Model\CustomerAddress::find($order['delivery_address_id']))
                             <h5>
-                                {{translate('Address : ')}}<span class="font-weight-normal">{{isset($address)?$address['address']:''}}</span>
+                                {{translate('Address : ')}}<span class="font-weight-normal">{{$address['address'] ?? ''}}</span>
                             </h5>
                         @endif
                     </div>-->
