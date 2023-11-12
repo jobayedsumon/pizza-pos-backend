@@ -402,7 +402,7 @@ class OrderController extends Controller
         return back();
     }
 
-    public function update_shipping(Request $request, $id)
+    public function update_shipping(Request $request, $id = null)
     {
 //        return $request;
         $request->validate([
@@ -442,7 +442,7 @@ class OrderController extends Controller
             $address->floor = $request->floor;
             $address->address = $request->address;
             $address->save();
-            Order::where('id', $request->input('order_id'))->update(['delivery_address_id' => $address->id]);
+            Order::where('id', $request->input('order_id'))->update(['delivery_address_id' => $address->id, 'delivery_address' => json_encode($address)]);
             Toastr::success(translate('Address added!'));
         }
         return back();

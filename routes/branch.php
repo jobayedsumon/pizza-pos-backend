@@ -86,7 +86,7 @@ Route::group(['namespace' => 'Branch', 'as' => 'branch.'], function () {
             Route::get('list/{status}', 'OrderController@list')->name('list');
             Route::put('status-update/{id}', 'OrderController@status')->name('status-update');
             Route::get('view/{id}', 'OrderController@view')->name('view');
-            Route::post('update-shipping/{id}', 'OrderController@update_shipping')->name('update-shipping');
+            Route::post('update-shipping/{id?}', 'OrderController@update_shipping')->name('update-shipping');
             Route::delete('delete/{id}', 'OrderController@delete')->name('delete');
             Route::post('search', 'OrderController@search')->name('search');
         });

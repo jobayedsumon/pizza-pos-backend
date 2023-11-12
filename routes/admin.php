@@ -191,7 +191,7 @@ Route::group(['namespace' => 'Admin', 'as' => 'admin.'], function () {
             Route::post('add-payment-ref-code/{id}', 'OrderController@add_payment_ref_code')->name('add-payment-ref-code');
             Route::get('branch-filter/{branch_id}', 'OrderController@branch_filter')->name('branch-filter');
             Route::post('search', 'OrderController@search')->name('search');
-            Route::post('update-shipping/{id}', 'OrderController@update_shipping')->name('update-shipping');
+            Route::post('update-shipping/{id?}', 'OrderController@update_shipping')->name('update-shipping');
             Route::delete('delete/{id}', 'OrderController@delete')->name('delete');
             Route::get('export', 'OrderController@export_data')->name('export');
             Route::get('ajax-change-delivery-time-date/{order_id}', 'OrderController@ajax_change_delivery_time_date')->name('ajax-change-delivery-time-date');

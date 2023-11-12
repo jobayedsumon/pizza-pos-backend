@@ -753,8 +753,8 @@
                         <i class="tio-clear tio-lg"></i>
                     </button>
                 </div>
-                @if($order['delivery_address_id'])
-                    <form action="{{route('admin.orders.update-shipping',[$order['delivery_address_id']])}}" method="post">
+                @if(isset($address))
+                    <form action="{{route('admin.orders.update-shipping',[@$address['id']])}}" method="post">
                         @csrf
                         <input type="hidden" name="user_id" value="{{$order->user_id}}">
                         <input type="hidden" name="order_id" value="{{$order->id}}">

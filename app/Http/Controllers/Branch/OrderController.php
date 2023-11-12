@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Branch;
 
 use App\CentralLogics\Helpers;
 use App\Http\Controllers\Controller;
+use App\Model\CustomerAddress;
 use App\Model\Order;
 use Brian2694\Toastr\Facades\Toastr;
 use Carbon\Carbon;
@@ -539,7 +540,7 @@ class OrderController extends Controller
         return back();
     }
 
-    public function update_shipping(Request $request, $id)
+    public function update_shipping(Request $request, $id = null)
     {
         $request->validate([
             'contact_person_name' => 'required',
@@ -562,8 +563,26 @@ class OrderController extends Controller
             'updated_at' => now()
         ];
 
-        DB::table('customer_addresses')->where('id', $id)->update($address);
-        Toastr::success(translate('Address updated!'));
+        if ($id) {
+            DB::table('customer_addresses')->where('id', $id)->update($address);
+            Toastr::success(translate('Address updated!'));
+        }
+        else {
+            $address = new CustomerAddress;
+            $address->contact_person_name = $request->input('contact_person_name');
+            $address->contact_person_number = $request->input('contact_person_number');
+            $address->address_type = $request->input('address_type');
+            $address->address = $request->input('address');
+            $address->longitude = $request->input('longitude');
+            $address->latitude = $request->input('latitude');
+            $address->user_id = $request->input('user_id');
+            $address->house = $request->house;
+            $address->floor = $request->floor;
+            $address->address = $request->address;
+            $address->save();
+            Order::where('id', $request->input('order_id'))->update(['delivery_address_id' => $address->id, 'delivery_address' => json_encode($address)]);
+            Toastr::success(translate('Address added!'));
+        }
         return back();
     }
 
