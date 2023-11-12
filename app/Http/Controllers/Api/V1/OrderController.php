@@ -67,11 +67,11 @@ class OrderController extends Controller
 
             // $order_id = 100000 + Order::all()->count() + 1;
             $order_id = (@Order::query()->latest()->first() ? @Order::query()->latest()->first()->id : 0) + 1;
-            
+
             while(Order::query()->find($order_id)){
                 $order_id++;
             }
-            
+
             $or = [
                 'id' => $order_id,
                 'user_id' => $request->user()->id,
@@ -88,11 +88,11 @@ class OrderController extends Controller
 
                 'order_type' => $request['order_type'],
                 'branch_id' => $request['branch_id'],
-//                'delivery_address_id' => $request->delivery_address_id,
+                'delivery_address_id' => $request->delivery_address_id ?? null,
 
                 'delivery_date' => $del_date,
                 'delivery_time' => $del_time,
-                'delivery_address' => json_encode(CustomerAddress::query()->find($request->delivery_address_id) ?? null),
+                'delivery_address' => $request->delivery_address_id ? json_encode(CustomerAddress::query()->find($request->delivery_address_id)) : null,
 
                 'delivery_charge' => Helpers::get_delivery_charge($request['distance']),
                 'preparation_time' => Helpers::get_business_settings('default_preparation_time') ?? 0,
@@ -141,22 +141,23 @@ class OrderController extends Controller
             }
 
             $or['total_tax_amount'] = $total_tax_amount;
+
             $o_id = DB::table('orders')->insertGetId($or);
 
-            $fcm_token = $request->user()->cm_firebase_token;
-            $value = Helpers::order_status_update_message(($request->payment_method=='cash_on_delivery')?'pending':'confirmed');
+//            $fcm_token = $request->user()->cm_firebase_token;
+//            $value = Helpers::order_status_update_message(($request->payment_method=='cash_on_delivery')?'pending':'confirmed');
             try {
                 //send push notification
-                if ($value) {
-                    $data = [
-                        'title' => translate('Order'),
-                        'description' => $value,
-                        'order_id' => $order_id,
-                        'image' => '',
-                        'type'=>'order_status',
-                    ];
-                    Helpers::send_push_notif_to_device($fcm_token, $data);
-                }
+//                if ($value) {
+//                    $data = [
+//                        'title' => translate('Order'),
+//                        'description' => $value,
+//                        'order_id' => $order_id,
+//                        'image' => '',
+//                        'type'=>'order_status',
+//                    ];
+//                    Helpers::send_push_notif_to_device($fcm_token, $data);
+//                }
 
                 //send email
                 $emailServices = Helpers::get_business_settings('mail_config');
@@ -168,21 +169,21 @@ class OrderController extends Controller
 
             }
 
-            if($or['order_status'] == 'confirmed') {
-                $data = [
-                    'title' => translate('You have a new order - (Order Confirmed).'),
-                    'description' => $order_id,
-                    'order_id' => $order_id,
-                    'image' => '',
-                ];
-
-                try {
-                    Helpers::send_push_notif_to_topic($data, "kitchen-{$or['branch_id']}",'general');
-
-                } catch (\Exception $e) {
-                    Toastr::warning(translate('Push notification failed!'));
-                }
-            }
+//            if($or['order_status'] == 'confirmed') {
+//                $data = [
+//                    'title' => translate('You have a new order - (Order Confirmed).'),
+//                    'description' => $order_id,
+//                    'order_id' => $order_id,
+//                    'image' => '',
+//                ];
+//
+//                try {
+//                    Helpers::send_push_notif_to_topic($data, "kitchen-{$or['branch_id']}",'general');
+//
+//                } catch (\Exception $e) {
+//                    Toastr::warning(translate('Push notification failed!'));
+//                }
+//            }
 
             return response()->json([
                 'message' => translate('order_success'),
@@ -225,18 +226,18 @@ class OrderController extends Controller
             $del_date = $request['delivery_date'];
             $del_time = $request['delivery_time'];
         }
-        
+
         $user_id = DB::table('guest_order_uuids')->where('order_uuid',$request['uuid'])->first()->user_id;
         $user = User::find($user_id);
 
         // try {
 //            $order_id = 100000 + Order::all()->count() + 1;
             $order_id = (@Order::query()->latest()->first() ? @Order::query()->latest()->first()->id : 0) + 1;
-            
+
             while(Order::query()->find($order_id)){
                 $order_id++;
             }
-            
+
             $or = [
                 'id' => $order_id,
                 'user_id' => $user->id,
@@ -253,7 +254,7 @@ class OrderController extends Controller
 
                 'order_type' => $request['order_type'],
                 'branch_id' => $request['branch_id'],
-//                'delivery_address_id' => $request->delivery_address_id,
+                'delivery_address_id' => $request->delivery_address_id ?? null,
 
                 'delivery_date' => $del_date,
                 'delivery_time' => $del_time,
@@ -308,20 +309,20 @@ class OrderController extends Controller
             $or['total_tax_amount'] = $total_tax_amount;
             $o_id = DB::table('orders')->insertGetId($or);
 
-            $fcm_token = $user->cm_firebase_token;
-            $value = Helpers::order_status_update_message(($request->payment_method=='cash_on_delivery')?'pending':'confirmed');
+//            $fcm_token = $user->cm_firebase_token;
+//            $value = Helpers::order_status_update_message(($request->payment_method=='cash_on_delivery')?'pending':'confirmed');
             try {
                 //send push notification
-                if ($value) {
-                    $data = [
-                        'title' => translate('Order'),
-                        'description' => $value,
-                        'order_id' => $order_id,
-                        'image' => '',
-                        'type'=>'order_status',
-                    ];
-                    Helpers::send_push_notif_to_device($fcm_token, $data);
-                }
+//                if ($value) {
+//                    $data = [
+//                        'title' => translate('Order'),
+//                        'description' => $value,
+//                        'order_id' => $order_id,
+//                        'image' => '',
+//                        'type'=>'order_status',
+//                    ];
+//                    Helpers::send_push_notif_to_device($fcm_token, $data);
+//                }
 
                 //send email
                 $emailServices = Helpers::get_business_settings('mail_config');
@@ -333,21 +334,21 @@ class OrderController extends Controller
 
             }
 
-            if($or['order_status'] == 'confirmed') {
-                $data = [
-                    'title' => translate('You have a new order - (Order Confirmed).'),
-                    'description' => $order_id,
-                    'order_id' => $order_id,
-                    'image' => '',
-                ];
-
-                try {
-                    Helpers::send_push_notif_to_topic($data, "kitchen-{$or['branch_id']}",'general');
-
-                } catch (\Exception $e) {
-                    Toastr::warning(translate('Push notification failed!'));
-                }
-            }
+//            if($or['order_status'] == 'confirmed') {
+//                $data = [
+//                    'title' => translate('You have a new order - (Order Confirmed).'),
+//                    'description' => $order_id,
+//                    'order_id' => $order_id,
+//                    'image' => '',
+//                ];
+//
+//                try {
+//                    Helpers::send_push_notif_to_topic($data, "kitchen-{$or['branch_id']}",'general');
+//
+//                } catch (\Exception $e) {
+//                    Toastr::warning(translate('Push notification failed!'));
+//                }
+//            }
 
             return response()->json([
                 'message' => translate('order_success'),

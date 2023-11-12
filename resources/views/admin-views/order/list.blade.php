@@ -261,7 +261,7 @@
                                     <a class="text-dark fz-12" href="tel:{{$order->customer->phone}}">{{$order->customer->phone}}</a>
                                     @else
                                         <span class="text-capitalize text-muted">
-                                            {{translate('Customer_Unavailable')}}
+                                            {{translate('walk_in_customer')}}
                                         </span>
                                     @endif
                                 </td>

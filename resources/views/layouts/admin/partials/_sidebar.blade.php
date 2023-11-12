@@ -114,7 +114,7 @@
                                             <span class="text-truncate sidebar--badge-container">
                                                 <span>{{translate('all')}}</span>
                                                 <span class="badge badge-soft-info badge-pill ml-1">
-                                                    {{\App\Model\Order::notPos()->notDineIn()->notSchedule()->count()}}
+                                                    {{\App\Model\Order::count()}}
                                                 </span>
                                             </span>
                                         </a>
@@ -125,7 +125,7 @@
                                             <span class="text-truncate sidebar--badge-container">
                                                 <span>{{translate('pending')}}</span>
                                                 <span class="badge badge-soft-info badge-pill ml-1">
-                                                    {{\App\Model\Order::notPos()->notDineIn()->where(['order_status'=>'pending'])->notSchedule()->count()}}
+                                                    {{\App\Model\Order::where(['order_status'=>'pending'])->count()}}
                                                 </span>
                                             </span>
                                         </a>
@@ -136,7 +136,7 @@
                                             <span class="text-truncate sidebar--badge-container">
                                                 {{translate('confirmed')}}
                                                     <span class="badge badge-soft-success badge-pill ml-1">
-                                                    {{\App\Model\Order::notPos()->notDineIn()->where(['order_status'=>'confirmed'])->notSchedule()->count()}}
+                                                    {{\App\Model\Order::where(['order_status'=>'confirmed'])->count()}}
                                                 </span>
                                             </span>
                                         </a>
@@ -147,7 +147,7 @@
                                             <span class="text-truncate sidebar--badge-container">
                                                     {{translate('processing')}}
                                                     <span class="badge badge-soft-warning badge-pill ml-1">
-                                                    {{\App\Model\Order::notPos()->notDineIn()->where(['order_status'=>'processing'])->notSchedule()->count()}}
+                                                    {{\App\Model\Order::where(['order_status'=>'processing'])->count()}}
                                                 </span>
                                             </span>
                                         </a>
@@ -159,7 +159,7 @@
                                             <span class="text-truncate sidebar--badge-container">
                                                     {{translate('out_for_delivery')}}
                                                     <span class="badge badge-soft-warning badge-pill ml-1">
-                                                    {{\App\Model\Order::notPos()->notDineIn()->where(['order_status'=>'out_for_delivery'])->notSchedule()->count()}}
+                                                    {{\App\Model\Order::where(['order_status'=>'out_for_delivery'])->count()}}
                                                 </span>
                                             </span>
                                         </a>
@@ -170,7 +170,7 @@
                                             <span class="text-truncate sidebar--badge-container">
                                                     {{translate('delivered')}}
                                                     <span class="badge badge-soft-success badge-pill ml-1">
-                                                    {{\App\Model\Order::notPos()->notDineIn()->where(['order_status'=>'delivered'])->count()}}
+                                                    {{\App\Model\Order::where(['order_status'=>'delivered'])->count()}}
                                                 </span>
                                             </span>
                                         </a>
@@ -181,7 +181,7 @@
                                             <span class="text-truncate sidebar--badge-container">
                                                     {{translate('returned')}}
                                                     <span class="badge badge-soft-danger badge-pill ml-1">
-                                                    {{\App\Model\Order::notPos()->notDineIn()->where(['order_status'=>'returned'])->notSchedule()->count()}}
+                                                    {{\App\Model\Order::where(['order_status'=>'returned'])->count()}}
                                                 </span>
                                             </span>
                                         </a>
@@ -192,7 +192,7 @@
                                             <span class="text-truncate sidebar--badge-container">
                                                 {{translate('failed_to_deliver')}}
                                                 <span class="badge badge-soft-danger badge-pill ml-1">
-                                                    {{\App\Model\Order::notPos()->notDineIn()->where(['order_status'=>'failed'])->notSchedule()->count()}}
+                                                    {{\App\Model\Order::where(['order_status'=>'failed'])->count()}}
                                                 </span>
                                             </span>
                                         </a>
@@ -204,7 +204,7 @@
                                             <span class="text-truncate sidebar--badge-container">
                                                 {{translate('canceled')}}
                                                     <span class="badge badge-soft-dark badge-pill ml-1">
-                                                    {{\App\Model\Order::notPos()->notDineIn()->where(['order_status'=>'canceled'])->notSchedule()->count()}}
+                                                    {{\App\Model\Order::where(['order_status'=>'canceled'])->count()}}
                                                 </span>
                                             </span>
                                         </a>
@@ -216,7 +216,7 @@
                                             <span class="text-truncate sidebar--badge-container">
                                                 {{translate('scheduled')}}
                                                     <span class="badge badge-soft-info badge-pill ml-1">
-                                                    {{\App\Model\Order::notPos()->notDineIn()->where('delivery_date','>',\Carbon\Carbon::now()->format('Y-m-d'))->count()}}
+                                                    {{\App\Model\Order::where('delivery_date','>',\Carbon\Carbon::now()->format('Y-m-d'))->count()}}
                                                 </span>
                                             </span>
                                         </a>

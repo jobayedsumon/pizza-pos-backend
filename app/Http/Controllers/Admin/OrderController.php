@@ -88,41 +88,41 @@ class OrderController extends Controller
         }
 
         $order_count = [
-            'pending' =>    Order::notPos()->notDineIn()->where(['order_status'=>'pending'])->notSchedule()
+            'pending' =>    Order::where(['order_status'=>'pending'])
                 ->when(!is_null($from) && !is_null($to), function ($query) use($from, $to) {
                     $query->whereBetween('created_at', [$from, Carbon::parse($to)->endOfDay()]);
                 })->count(),
-            'confirmed' =>  Order::notPos()->notDineIn()->where(['order_status'=>'confirmed'])->notSchedule()
+            'confirmed' =>  Order::where(['order_status'=>'confirmed'])
                 ->when(!is_null($from) && !is_null($to), function ($query) use($from, $to) {
                     $query->whereBetween('created_at', [$from, Carbon::parse($to)->endOfDay()]);
                 })->count(),
-            'processing' => Order::notPos()->notDineIn()->where(['order_status'=>'processing'])->notSchedule()
+            'processing' => Order::where(['order_status'=>'processing'])
                 ->when(!is_null($from) && !is_null($to), function ($query) use($from, $to) {
                     $query->whereBetween('created_at', [$from, Carbon::parse($to)->endOfDay()]);
                 })->count(),
-            'out_for_delivery' => Order::notPos()->notDineIn()->where(['order_status'=>'out_for_delivery'])->notSchedule()
+            'out_for_delivery' => Order::where(['order_status'=>'out_for_delivery'])
                 ->when(!is_null($from) && !is_null($to), function ($query) use($from, $to) {
                     $query->whereBetween('created_at', [$from, Carbon::parse($to)->endOfDay()]);
                 })->count(),
-            'delivered' =>  Order::notPos()->notDineIn()->where(['order_status'=>'delivered'])
+            'delivered' =>  Order::where(['order_status'=>'delivered'])
                 ->when(!is_null($from) && !is_null($to), function ($query) use($from, $to) {
                     $query->whereBetween('created_at', [$from, Carbon::parse($to)->endOfDay()]);
                 })->count(),
-            'canceled' =>   Order::notPos()->notDineIn()->where(['order_status'=>'canceled'])->notSchedule()
+            'canceled' =>   Order::where(['order_status'=>'canceled'])
                 ->when(!is_null($from) && !is_null($to), function ($query) use($from, $to) {
                     $query->whereBetween('created_at', [$from, Carbon::parse($to)->endOfDay()]);
                 })->count(),
-            'returned' =>   Order::notPos()->notDineIn()->where(['order_status'=>'returned'])->notSchedule()
+            'returned' =>   Order::where(['order_status'=>'returned'])
                 ->when(!is_null($from) && !is_null($to), function ($query) use($from, $to) {
                     $query->whereBetween('created_at', [$from, Carbon::parse($to)->endOfDay()]);
                 })->count(),
-            'failed' =>     Order::notPos()->notDineIn()->where(['order_status'=>'failed'])->notSchedule()
+            'failed' =>     Order::where(['order_status'=>'failed'])
                 ->when(!is_null($from) && !is_null($to), function ($query) use($from, $to) {
                     $query->whereBetween('created_at', [$from, Carbon::parse($to)->endOfDay()]);
                 })->count(),
         ];
 
-        $orders = $query->notPos()->notDineIn()->latest()->paginate(Helpers::getPagination())->appends($query_param);
+        $orders = $query->latest()->paginate(Helpers::getPagination())->appends($query_param);
         return view('admin-views.order.list', compact('orders', 'status', 'search', 'from', 'to', 'order_count'));
     }
 
@@ -198,7 +198,7 @@ class OrderController extends Controller
 
             }
         } catch (\Exception $e) {
-            Toastr::warning(translate('Push notification send failed for Customer!'));
+//            Toastr::warning(translate('Push notification send failed for Customer!'));
         }
 
         //delivery man notification
@@ -216,7 +216,7 @@ class OrderController extends Controller
                     Helpers::send_push_notif_to_device($fcm_token, $data);
                 }
             } catch (\Exception $e) {
-                Toastr::warning(translate('Push notification failed for DeliveryMan!'));
+//                Toastr::warning(translate('Push notification failed for DeliveryMan!'));
             }
         }
 
@@ -233,7 +233,7 @@ class OrderController extends Controller
                 Helpers::send_push_notif_to_topic($data, "kitchen-{$order->branch_id}",'general');
 
             } catch (\Exception $e) {
-                Toastr::warning(translate('Push notification failed!'));
+//                Toastr::warning(translate('Push notification failed!'));
             }
         }
         $table_order = TableOrder::where(['id' => $order->table_order_id])->first();
@@ -339,10 +339,10 @@ class OrderController extends Controller
             }
 
         } catch (\Exception $e) {
-            Toastr::warning(translate('Push notification send failed for Customer!'));
+//            Toastr::warning(translate('Push notification send failed for Customer!'));
         }
 
-        Toastr::success(translate('Order preparation time increased'));
+        Toastr::success(translate('Order preparation time changed!'));
         return back();
     }
 
@@ -553,7 +553,7 @@ class OrderController extends Controller
                 'SL' => ++$key,
                 'Order ID' => $order->id,
                 'Order Date' => date('d M Y h:m A',strtotime($order['created_at'])),
-                'Customer Info' => $order['user_id'] == null? 'Walk in Customer' : ($order->customer == null? 'Customer Unavailable' : $order->customer['f_name']. ' '. $order->customer['l_name']),
+                'Customer Info' => $order['user_id'] == null? 'Walk-In Customer' : ($order->customer == null? 'Walk-In Customer' : $order->customer['f_name']. ' '. $order->customer['l_name']),
                 'Branch' => $order->branch? $order->branch->name : 'Branch Deleted',
                 'Total Amount' => Helpers::set_symbol($order['order_amount']),
                 'Payment Status' => $order->payment_status=='paid'? 'Paid' : 'Unpaid',

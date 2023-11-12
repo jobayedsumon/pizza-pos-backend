@@ -208,6 +208,7 @@ class OrderController extends Controller
     {
         $from = $request['from'];
         $to = $request['to'];
+        $origin = $request['origin'];
 
         /*Order::where(['checked' => 0, 'branch_id' => auth('branch')->id()])->update(['checked' => 1]);*/
         $orders = Order::with(['customer'])->where(['checked' => 0,'branch_id' => auth('branch')->id()]);
@@ -270,7 +271,7 @@ class OrderController extends Controller
         $orders = $orders->notPos()->notDineIn()->latest()->paginate(Helpers::getPagination())->appends($query_param);
         session()->put('order_data_export', $orders);
 
-        return view('branch-views.order.partials.new_orders_modal_table', compact('orders', 'status', 'search', 'from', 'to', 'order_count'));
+        return view('branch-views.order.partials.new_orders_modal_table', compact('orders', 'status', 'search', 'from', 'to', 'order_count', 'origin'));
     }
 
     public function search(Request $request)
@@ -357,7 +358,7 @@ class OrderController extends Controller
                 }
             }
         } catch (\Exception $e) {
-            Toastr::warning(translate('Push notification failed for Customer!'));
+//            Toastr::warning(translate('Push notification failed for Customer!'));
         }
 
         //delivery man notification
@@ -376,7 +377,7 @@ class OrderController extends Controller
                     Helpers::send_push_notif_to_device($fcm_token, $data);
                 }
             } catch (\Exception $e) {
-                Toastr::warning(translate('Push notification failed for DeliveryMan!'));
+//                Toastr::warning(translate('Push notification failed for DeliveryMan!'));
             }
         }
 
@@ -439,10 +440,10 @@ class OrderController extends Controller
             }
 
         } catch (\Exception $e) {
-            Toastr::warning(translate('Push notification send failed for Customer!'));
+//            Toastr::warning(translate('Push notification send failed for Customer!'));
         }
 
-        Toastr::success(translate('Order preparation time increased'));
+        Toastr::success(translate('Order preparation time changed!'));
         return back();
     }
 
@@ -590,7 +591,7 @@ class OrderController extends Controller
             $data[$key]['SL'] = ++$key;
             $data[$key]['Order ID'] = $order->id;
             $data[$key]['Order Date'] = date('d M Y h:m A',strtotime($order['created_at']));
-            $data[$key]['Customer Info'] = $order['user_id'] == null? 'Walk in Customer' : ($order->customer == null? 'Customer Unavailable' : $order->customer['f_name']. ' '. $order->customer['l_name']);
+            $data[$key]['Customer Info'] = $order['user_id'] == null? 'Walk-In Customer' : ($order->customer == null? 'Walk-In Customer' : $order->customer['f_name']. ' '. $order->customer['l_name']);
             $data[$key]['Branch'] = $order->branch? $order->branch->name : 'Branch Deleted';
             $data[$key]['Total Amount'] = Helpers::set_symbol($order['order_amount']);
             $data[$key]['Payment Status'] = $order->payment_status=='paid'? 'Paid' : 'Unpaid';
@@ -610,7 +611,7 @@ class OrderController extends Controller
             $data[$key]['SL'] = ++$key;
             $data[$key]['Order ID'] = $order->id;
             $data[$key]['Order Date'] = date('d M Y h:m A',strtotime($order['created_at']));
-            $data[$key]['Customer Info'] = $order['user_id'] == null? 'Walk in Customer' : ($order->customer == null? 'Customer Unavailable' : $order->customer['f_name']. ' '. $order->customer['l_name']);
+            $data[$key]['Customer Info'] = $order['user_id'] == null? 'Walk-In Customer' : ($order->customer == null? 'Walk-In Customer' : $order->customer['f_name']. ' '. $order->customer['l_name']);
             $data[$key]['Branch'] = $order->branch? $order->branch->name : 'Branch Deleted';
             $data[$key]['Total Amount'] = Helpers::set_symbol($order['order_amount']);
             $data[$key]['Payment Status'] = $order->payment_status=='paid'? 'Paid' : 'Unpaid';
@@ -638,7 +639,7 @@ class OrderController extends Controller
             $data[$key]['SL'] = ++$key;
             $data[$key]['Order ID'] = $order->id;
             $data[$key]['Order Date'] = date('d M Y h:m A',strtotime($order['created_at']));
-            $data[$key]['Customer Info'] = $order['user_id'] == null? 'Walk in Customer' : ($order->customer == null? 'Customer Unavailable' : $order->customer['f_name']. ' '. $order->customer['l_name']);
+            $data[$key]['Customer Info'] = $order['user_id'] == null? 'Walk-In Customer' : ($order->customer == null? 'Walk-In Customer' : $order->customer['f_name']. ' '. $order->customer['l_name']);
             $data[$key]['Branch'] = $order->branch? $order->branch->name : 'Branch Deleted';
             $data[$key]['Total Amount'] = Helpers::set_symbol($order['order_amount']);
             $data[$key]['Payment Status'] = $order->payment_status=='paid'? 'Paid' : 'Unpaid';

@@ -119,7 +119,7 @@
                                 </a>
                             @else
                                 <span class="text-capitalize text-muted">
-                                        {{translate('Customer_Unavailable')}}
+                                        {{translate('walk_in_customer')}}
                                     </span>
                             @endif
                         </td>

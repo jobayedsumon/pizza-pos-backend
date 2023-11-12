@@ -810,46 +810,46 @@ class POSController extends Controller
                 session(['last_order' => $order->id]);
                 Toastr::success(translate('order_placed_successfully'));
 
-                $user = User::query()->find($order->user_id);
-                $fcm_token = $user->cm_firebase_token;
-                $value = Helpers::order_status_update_message(($request->payment_method=='cash_on_delivery')?'pending':'confirmed');
-                try {
-                    //send push notification
-                    if ($value) {
-                        $data = [
-                            'title' => translate('Order'),
-                            'description' => $value,
-                            'order_id' => $order_id,
-                            'image' => '',
-                            'type'=>'order_status',
-                        ];
-                        Helpers::send_push_notif_to_device($fcm_token, $data);
-                    }
-
-                    //send email
-                    $emailServices = Helpers::get_business_settings('mail_config');
-                    if (isset($emailServices['status']) && $emailServices['status'] == 1) {
-                        Mail::to($user->email)->send(new \App\Mail\OrderPlaced($order_id));
-                    }
-
-                } catch (\Exception $e) {
-
-                }
+//                $user = User::query()->find($order->user_id);
+//                $fcm_token = $user->cm_firebase_token;
+//                $value = Helpers::order_status_update_message(($request->payment_method=='cash_on_delivery')?'pending':'confirmed');
+//                try {
+//                    //send push notification
+//                    if ($value) {
+//                        $data = [
+//                            'title' => translate('Order'),
+//                            'description' => $value,
+//                            'order_id' => $order_id,
+//                            'image' => '',
+//                            'type'=>'order_status',
+//                        ];
+//                        Helpers::send_push_notif_to_device($fcm_token, $data);
+//                    }
+//
+//                    //send email
+//                    $emailServices = Helpers::get_business_settings('mail_config');
+//                    if (isset($emailServices['status']) && $emailServices['status'] == 1) {
+//                        Mail::to($user->email)->send(new \App\Mail\OrderPlaced($order_id));
+//                    }
+//
+//                } catch (\Exception $e) {
+//
+//                }
 
                 //send notification to kitchen
-                if ($order->order_type == 'dine_in' || $order->order_type == 'delivery'){
-                    $notification = new Notification;
-                    $notification->title =  "You have a new order from POS - (Order Confirmed). ";
-                    $notification->description = $order->id;
-                    $notification->status = 1;
-
-                    try {
-                        Helpers::send_push_notif_to_topic($notification, "kitchen-{$order->branch_id}",'general');
-                        Toastr::success(translate('Notification sent successfully!'));
-                    } catch (\Exception $e) {
-                        Toastr::warning(translate('Push notification failed!'));
-                    }
-                }
+//                if ($order->order_type == 'dine_in' || $order->order_type == 'delivery'){
+//                    $notification = new Notification;
+//                    $notification->title =  "You have a new order from POS - (Order Confirmed). ";
+//                    $notification->description = $order->id;
+//                    $notification->status = 1;
+//
+//                    try {
+//                        Helpers::send_push_notif_to_topic($notification, "kitchen-{$order->branch_id}",'general');
+//                        Toastr::success(translate('Notification sent successfully!'));
+//                    } catch (\Exception $e) {
+//                        Toastr::warning(translate('Push notification failed!'));
+//                    }
+//                }
             }
 
             return back();

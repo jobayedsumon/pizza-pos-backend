@@ -105,7 +105,7 @@
                             @elseif($order['user_id'] == null)
                                 <label class="badge badge-soft-success">{{translate('walk_in_customer')}}</label>
                             @else
-                                <span class="text-capitalize badge-dark">{{translate('Customer_Unavailable')}}</span>
+                                <span class="text-capitalize badge-dark">{{translate('walk_in_customer')}}</span>
                             @endif
                         </td>
                         <td>

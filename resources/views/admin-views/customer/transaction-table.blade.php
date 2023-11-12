@@ -72,7 +72,7 @@
                                             </a>
                                         @else
                                             <span class="text-muted small">
-                                                {{translate('Customer_Unavailable')}}
+                                                {{translate('walk_in_customer')}}
                                             </span>
                                         @endif
                                     </td>

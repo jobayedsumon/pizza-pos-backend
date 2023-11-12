@@ -144,7 +144,7 @@
                                     @elseif($order['user_id'] == null)
                                         <h6 class="text-capitalize text-muted">{{translate('walk_in_customer')}}</h6>
                                     @else
-                                        <h6 class="text-capitalize text-muted">{{translate('Customer_Unavailable')}}</h6>
+                                        <h6 class="text-capitalize text-muted">{{translate('walk_in_customer')}}</h6>
                                     @endif
                                 </td>
                                 <td>{{ @$order->branch->name }}</td>

@@ -130,15 +130,21 @@
                     <div class="col-lg-5">
                         <div class="card billing-section-wrap">
                             <!-- POS Title -->
-                            <div class="pos-title">
+                            <div class="pos-title d-flex justify-content-between">
                                 <h4 class="mb-0">{{translate('Billing_Section')}}</h4>
+                                <h5 class="staff-name">Staff Name: <span class="blink" id="currentStaffName">
+                                        @if(session('order_taken_by'))
+                                            {{ $employees->find(session('order_taken_by'))->f_name }}
+                                        @else
+                                            {{translate('Select Your Name')}}
+                                        @endif
+                                    </span></h5>
                             </div>
                             <!-- End POS Title -->
 
                             <div class="px-2 pt-2 px-sm-4 pt-sm-2">
                                 <label for="">Order Taken By</label>
-                                <select
-                                    onchange="store_key('order_taken_by', this.value)" id='order_taken_by' name="order_taken_by" data-placeholder="{{translate('Select Your Name')}}" class="form-control"
+                                <select id='order_taken_by' name="order_taken_by" data-placeholder="{{translate('Select Your Name')}}" class="form-control"
                                 >
                                     <option selected disabled>{{translate('Select Your Name')}}</option>
                                     @forelse($employees as $employee)
@@ -326,6 +332,12 @@
 <script>
 
     $('#order_taken_by').select2();
+
+    $(document).on('change', '#order_taken_by', function () {
+        var name = $(this).find('option:selected').text();
+        $('#currentStaffName').text(name);
+        store_key('order_taken_by', $(this).val());
+    });
 
     $(document).on('ready', function () {
         @if($order)

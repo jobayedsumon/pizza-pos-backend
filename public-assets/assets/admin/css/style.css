@@ -476,6 +476,26 @@ label:has(+ input:required):after {
   padding: 16px 20px;
 }
 
+.pos-title .staff-name {
+    color: #E34234;
+}
+
+.pos-title .staff-name .blink {
+    animation: blink 2s linear infinite;
+}
+
+@keyframes blink {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
 .pos-item-wrap {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));

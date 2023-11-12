@@ -146,7 +146,7 @@ class TableOrderController extends Controller
             $data[$key]['SL'] = ++$key;
             $data[$key]['Order ID'] = $order->id;
             $data[$key]['Order Date'] = date('d M Y h:m A',strtotime($order['created_at']));
-            $data[$key]['Customer Info'] = $order['user_id'] == null? 'Walk in Customer' : ($order->customer == null? 'Customer Unavailable' : $order->customer['f_name']. ' '. $order->customer['l_name']);
+            $data[$key]['Customer Info'] = $order['user_id'] == null? 'Walk-In Customer' : ($order->customer == null? 'Walk-In Customer' : $order->customer['f_name']. ' '. $order->customer['l_name']);
             $data[$key]['Branch'] = $order->branch? $order->branch->name : 'Branch Deleted';
             $data[$key]['Total Amount'] = Helpers::set_symbol($order['order_amount']);
             $data[$key]['Payment Status'] = $order->payment_status=='paid'? 'Paid' : 'Unpaid';

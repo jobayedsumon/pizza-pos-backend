@@ -537,7 +537,7 @@
                                     <div class="mb-4 d-flex gap-2 justify-content-between">
                                         <h4 class="mb-0 d-flex gap-2">
                                             <i class="tio-user text-dark"></i>
-                                            {{translate('Delivery_Informatrion')}}
+                                            {{translate('Delivery_Information')}}
                                         </h4>
 
                                         <div class="edit-btn cursor-pointer" data-toggle="modal" data-target="#deliveryInfoModal">
@@ -627,7 +627,7 @@
                                         <img class="avatar avatar-lg rounded-circle" src="{{asset('public-assets/assets/admin/img/160x160/img1.jpg')}}" alt="Image">
                                     </a>
                                     <div class="media-body d-flex flex-column gap-1">
-                                        <a target="#"  class="text-dark text-capitalize"><strong>{{translate('walking_customer')}}</strong></a>
+                                        <a target="#"  class="text-dark text-capitalize"><strong>{{translate('walk_in_customer')}}</strong></a>
                                     </div>
                                 </div>
                             </div>
@@ -748,7 +748,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title h4" id="mySmallModalLabel">{{translate('Update_Delivery_Informatrion')}}</h5>
+                    <h5 class="modal-title h4" id="mySmallModalLabel">{{translate('Update_Delivery_Information')}}</h5>
                     <button type="button" class="btn btn-xs btn-icon btn-ghost-secondary" data-dismiss="modal" aria-label="Close">
                         <i class="tio-clear tio-lg"></i>
                     </button>

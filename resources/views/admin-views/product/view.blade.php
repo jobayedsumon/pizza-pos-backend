@@ -249,7 +249,7 @@
                                         <span class="d-block font-size-sm text-body">{{$review->customer->email}}</span>
                                         @else
                                             <span class="badge-pill badge-soft-dark text-muted text-sm small">
-                                                {{translate('Customer unavailable')}}
+                                                {{translate('walk_in_customer')}}
                                             </span>
                                         @endif
                                     </div>

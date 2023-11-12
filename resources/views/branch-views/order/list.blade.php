@@ -258,7 +258,7 @@
                                         href="{{route('branch.orders.details',['id'=>$order['id']])}}">{{$order->customer['f_name'].' '.$order->customer['l_name']}}</a>
                                     @else
                                         <span class="text-capitalize text-muted">
-                                            {{translate('Customer_Unavailable')}}
+                                            {{translate('walk_in_customer')}}
                                         </span>
                                     @endif
                                 </td>

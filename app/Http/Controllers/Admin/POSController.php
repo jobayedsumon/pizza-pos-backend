@@ -737,7 +737,7 @@ class POSController extends Controller
                 'SL' => ++$key,
                 'Order ID' => $order->id,
                 'Order Date' => date('d M Y',strtotime($order['created_at'])). ' ' . date("h:i A",strtotime($order['created_at'])),
-                'Customer Info' => $order['user_id'] == null? 'Walk in Customer' : $order->customer['f_name']. ' '. $order->customer['l_name'],
+                'Customer Info' => $order['user_id'] == null? 'Walk-In Customer' : $order->customer['f_name']. ' '. $order->customer['l_name'],
                 'Branch' => $order->branch? $order->branch->name : 'Branch Deleted',
                 'Total Amount' => Helpers::set_symbol($order['order_amount']),
                 'Payment Status' => $order->payment_status=='paid'? 'Paid' : 'Unpaid',

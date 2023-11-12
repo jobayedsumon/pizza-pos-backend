@@ -59,18 +59,12 @@
     <!-- End Footer -->
 
     <div class="modal fade" id="popup-modal">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
+        <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+            <div class="modal-content border-primary">
                 <div class="modal-body">
                     <div class="row">
-                        <div class="col-12">
-                            <center>
-                                <h2 style="color: rgba(96,96,96,0.68)">
-                                    <i class="tio-shopping-cart-outlined"></i> {{ translate('You have new order, Check Please.') }}
-                                </h2>
-                                <hr>
-                                <button onclick="check_order()" class="btn btn-primary">{{ translate('Ok, let me check') }}</button>
-                            </center>
+                        <div class="col-12" id="popup-modal-table">
+
                         </div>
                     </div>
                 </div>
@@ -187,6 +181,13 @@
                     if (data.new_order > 0) {
                         playAudio();
                         $('#popup-modal').appendTo("body").modal('show');
+                        $.get({
+                            url: '{{route('branch.orders.unchecked-orders-modal','confirmed')}}?origin=admin',
+                            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                            success: function (response) {
+                                $('#popup-modal-table').html(response)
+                            },
+                        });
                     }
                 },
             });

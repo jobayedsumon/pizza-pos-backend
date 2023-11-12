@@ -14,9 +14,11 @@
 
 
 
+        @if($origin !== 'admin')
         <a class="btn btn-sm btn-info delivery-popup-accept-all-order-btn" href="javascript:void(0);">
             Accept All
         </a>
+        @endif
     </div>
     <!-- End Page Header -->
 
@@ -141,7 +143,7 @@
                                        href="{{route('branch.orders.details',['id'=>$order['id']])}}">{{$order->customer['f_name'].' '.$order->customer['l_name']}}</a>
                                 @else
                                     <span class="text-capitalize text-muted">
-                                            {{translate('Customer_Unavailable')}}
+                                            {{translate('walk_in_customer')}}
                                         </span>
                                 @endif
                             </td>
@@ -200,9 +202,19 @@
                                 {{--</div>--}}
 
                                 <div class="d-flex justify-content-center gap-2">
-                                    <a class="btn btn-sm btn-outline-info delivery-popup-accept-order-btn" data-id="{{$order['id']}}" href="javascript:void(0);">
-                                        Accept
-                                    </a>
+                                    @if($origin !== 'admin')
+                                        <a class="btn btn-sm btn-outline-info delivery-popup-accept-order-btn" data-id="{{$order['id']}}" href="javascript:void(0);">
+                                            Accept
+                                        </a>
+                                    @else
+                                        <a class="btn btn-sm btn-outline-primary square-btn" href="{{route('admin.orders.details',['id'=>$order['id']])}}">
+                                            <i class="tio-invisible"></i>
+                                        </a>
+                                        <a href="{{route('admin.orders.generate-invoice',[$order['id']])}}" class="btn btn-sm btn-outline-success square-btn">
+                                            <i class="tio-print"></i>
+                                        </a>
+                                    @endif
+
                                 </div>
                             </td>
                         </tr>

@@ -179,7 +179,7 @@
                                     </a>
                                 @else
                                     <span class="badge-pill badge-soft-dark text-muted text-sm small">
-                                        {{translate('Customer unavailable')}}
+                                        {{translate('walk_in_customer')}}
                                     </span>
                                 @endif
                             </td>
