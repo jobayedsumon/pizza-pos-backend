@@ -57,6 +57,10 @@ class CustomerAuthController extends Controller
                 ], 200);
             }
         }
+
+        return response()->json(['errors' => [
+            ['code' => 'phone', 'message' => translate('Invalid phone number!')]
+        ]], 403);
     }
 
     public function check_email(Request $request)
@@ -177,7 +181,7 @@ class CustomerAuthController extends Controller
                 'f_name'          => $request->f_name,
                 'l_name'          => $request->l_name,
                 'email'           => $request->email,
-                'phone'           => $request->phone,
+                'phone'           => $request['phone'],
                 'password'        => bcrypt($request->password),
                 'temporary_token' => $temporary_token,
             ]);
@@ -228,6 +232,9 @@ class CustomerAuthController extends Controller
 //        }
 
         $request['phone'] = substr($request['phone'], -10);
+
+        var_dump($request['phone']);
+        var_dump($request->all());
 
         $validator = Validator::make($request->all(), [
             'email_or_phone' => 'required|min:10|max:10|regex:/^0\d{9}$/|unique:users',
