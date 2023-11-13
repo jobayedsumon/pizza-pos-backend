@@ -18,6 +18,11 @@
         <a class="btn btn-sm btn-info delivery-popup-accept-all-order-btn" href="javascript:void(0);">
             Accept All
         </a>
+        @else
+            <a class="btn btn-sm btn-info" href="{{route('admin.orders.list', 'confirmed')}}">
+                <i class="tio-invisible"></i>
+                {{translate('View List')}}
+            </a>
         @endif
     </div>
     <!-- End Page Header -->

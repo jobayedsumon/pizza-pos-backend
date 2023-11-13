@@ -1821,7 +1821,6 @@
   'Addons : ' => 'Addons : ',
   'no_addons' => 'No addons',
   'Orders served' => 'Orders served',
-  'Branch Information' => 'Branch Information',
   'Address updated!' => 'Address updated!',
   'Assign' => 'Assign',
   'EX : Home' => 'EX : Home',
@@ -2338,4 +2337,5 @@
   'Error' => 'Error',
   '+61' => '+61',
   'Order preparation time changed!' => 'Order preparation time changed!',
+  'View List' => 'View List',
 );
