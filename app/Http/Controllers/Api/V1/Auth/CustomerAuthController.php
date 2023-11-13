@@ -153,95 +153,124 @@ class CustomerAuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'f_name' => 'required',
-            'l_name' => 'required',
+//            'l_name' => 'required',
             'email' => 'required|unique:users',
-            'phone' => 'required|unique:users|min:5|max:20',
+            'phone' => 'required|min:10|max:10|regex:/^0\d{9}$/|unique:users',
             'password' => 'required|min:6',
         ], [
             'f_name.required' => translate('The first name field is required.'),
-            'l_name.required' => translate('The last name field is required.'),
+//            'l_name.required' => translate('The last name field is required.'),
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => Helpers::error_processor($validator)], 403);
         }
 
-        $temporary_token = Str::random(40);
-        $user = User::create([
-            'f_name' => $request->f_name,
-            'l_name' => $request->l_name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'password' => bcrypt($request->password),
-            'temporary_token' => $temporary_token,
-        ]);
+        if(strlen($request['phone']) == 10 && is_numeric($request['phone']) && $request['phone'][0] == 0)
+        {
+            $request['phone'] = '+61' . substr($request['phone'], 1);
 
-        $phone_verification = Helpers::get_business_settings('phone_verification');
-        $email_verification = Helpers::get_business_settings('email_verification');
+            $temporary_token = Str::random(40);
+            $user            = User::create([
+                'f_name'          => $request->f_name,
+                'l_name'          => $request->l_name,
+                'email'           => $request->email,
+                'phone'           => $request->phone,
+                'password'        => bcrypt($request->password),
+                'temporary_token' => $temporary_token,
+            ]);
 
-        try {
-            $user->notify(new NewUserRegistration());
-        } catch (\Exception $exception) {
+            $phone_verification = Helpers::get_business_settings('phone_verification');
+            $email_verification = Helpers::get_business_settings('email_verification');
+
+            try
+            {
+                $user->notify(new NewUserRegistration());
+            }
+            catch (\Exception $exception)
+            {
+            }
+
+            if ($phone_verification && ! $user->is_phone_verified)
+            {
+                return response()->json(['temporary_token' => $temporary_token], 200);
+            }
+            if ($email_verification && ! $user->is_email_verified)
+            {
+                return response()->json(['temporary_token' => $temporary_token], 200);
+            }
+
+            $token = $user->createToken('RestaurantCustomerAuth')->accessToken;
+            return response()->json(['token' => $token], 200);
         }
 
-
-        if ($phone_verification && !$user->is_phone_verified) {
-            return response()->json(['temporary_token' => $temporary_token], 200);
-        }
-        if ($email_verification && !$user->is_email_verified) {
-            return response()->json(['temporary_token' => $temporary_token], 200);
-        }
-
-        $token = $user->createToken('RestaurantCustomerAuth')->accessToken;
-        return response()->json(['token' => $token], 200);
+        return response()->json(['errors' => [
+            ['code' => 'phone', 'message' => translate('Invalid phone number!')]
+        ]], 403);
     }
 
     public function login(Request $request)
     {
-        if($request->has('email_or_phone')) {
-            $user_id = $request['email_or_phone'];
-            $validator = Validator::make($request->all(), [
-                'email_or_phone' => 'required',
-                'password' => 'required|min:6'
-            ]);
-        }else{
-            $user_id = $request['email'];
-            $validator = Validator::make($request->all(), [
-                'email' => 'required',
-                'password' => 'required|min:6'
-            ]);
-        }
+//        if($request->has('email_or_phone')) {
+//            $user_id = $request['email_or_phone'];
+//            $validator = Validator::make($request->all(), [
+//                'email_or_phone' => 'required',
+//                'password' => 'required|min:6'
+//            ]);
+//        }else{
+//            $user_id = $request['email'];
+//            $validator = Validator::make($request->all(), [
+//                'email' => 'required',
+//                'password' => 'required|min:6'
+//            ]);
+//        }
+
+        $validator = Validator::make($request->all(), [
+            'email_or_phone' => 'required|min:10|max:10|regex:/^0\d{9}$/|unique:users',
+            'password' => 'required|min:6',
+        ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => Helpers::error_processor($validator)], 403);
         }
 
-        $user = User::where('is_active', 1)
-            ->where(function ($query) use($user_id) {
-                $query->where(['email' => $user_id])->orWhere('phone', $user_id);
-            })
-            ->first();
+        if(strlen($request['phone']) == 10 && is_numeric($request['phone']) && $request['phone'][0] == 0)
+        {
+            $request['phone'] = '+61' . substr($request['phone'], 1);
 
-        if (isset($user)) {
-            $user->temporary_token = Str::random(40);
-            $user->save();
-            $data = [
-                'email' => $user->email,
-                'password' => $request->password,
-                'user_type' => null,
-            ];
+            $user = User::where('is_active', 1)
+                ->where(function ($query) use ($request) {
+                    $query->where('phone', $request['phone']);
+                })
+                ->first();
 
-            if (auth()->attempt($data)) {
-                $token = auth()->user()->createToken('RestaurantCustomerAuth')->accessToken;
-                return response()->json(['token' => $token], 200);
+            if (isset($user))
+            {
+                $user->temporary_token = Str::random(40);
+                $user->save();
+                $data = [
+                    'email'     => $user->email,
+                    'password'  => $request->password,
+                    'user_type' => null,
+                ];
+
+                if (auth()->attempt($data))
+                {
+                    $token = auth()->user()->createToken('RestaurantCustomerAuth')->accessToken;
+                    return response()->json(['token' => $token], 200);
+                }
             }
+
+            $errors   = [];
+            $errors[] = ['code' => 'auth-001', 'message' => 'Invalid credential.'];
+            return response()->json([
+                'errors' => $errors
+            ], 401);
         }
 
-        $errors = [];
-        $errors[] = ['code' => 'auth-001', 'message' => 'Invalid credential.'];
-        return response()->json([
-            'errors' => $errors
-        ], 401);
+        return response()->json(['errors' => [
+            ['code' => 'phone', 'message' => translate('Invalid phone number!')]
+        ]], 403);
 
     }
 
