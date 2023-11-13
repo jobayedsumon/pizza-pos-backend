@@ -233,14 +233,12 @@ class CustomerAuthController extends Controller
 //            ]);
 //        }
 
-        $phone = $request['email_or_phone'];
-        $request['email_or_phone'] = substr($phone, -10);
+        $phone = substr($request['email_or_phone'], -10);
+        $request['phone'] = $phone;
 
         $validator = Validator::make($request->all(), [
-            'email_or_phone' => 'required|min:10|max:10|regex:/^0\d{9}$/|unique:users',
+            'phone' => 'required|min:10|max:10|regex:/^0\d{9}$/|unique:users',
             'password' => 'required|min:6',
-        ], [], [
-            'email_or_phone' => 'phone'
         ]);
 
         if ($validator->fails()) {
