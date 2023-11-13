@@ -207,12 +207,19 @@ class OrderController extends Controller
 
     public function unchecked_orders_modal($status, Request $request)
     {
-        $from = $request['from'];
-        $to = $request['to'];
+        $from   = $request['from'];
+        $to     = $request['to'];
         $origin = $request['origin'];
 
         /*Order::where(['checked' => 0, 'branch_id' => auth('branch')->id()])->update(['checked' => 1]);*/
-        $orders = Order::with(['customer'])->where(['checked' => 0,'branch_id' => auth('branch')->id()]);
+        if (auth('branch')->check())
+        {
+            $orders = Order::with(['customer'])->where(['checked' => 0, 'branch_id' => auth('branch')->id()]);
+        }
+        else
+        {
+            $orders = Order::with(['customer'])->where(['checked' => 0]);
+        }
 
         $query_param = [];
         $search = $request['search'];
