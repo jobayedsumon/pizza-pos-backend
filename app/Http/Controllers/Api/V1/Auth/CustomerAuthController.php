@@ -239,6 +239,8 @@ class CustomerAuthController extends Controller
         $validator = Validator::make($request->all(), [
             'email_or_phone' => 'required|min:10|max:10|regex:/^0\d{9}$/|unique:users',
             'password' => 'required|min:6',
+        ], [], [
+            'email_or_phone' => 'phone'
         ]);
 
         if ($validator->fails()) {
@@ -250,9 +252,7 @@ class CustomerAuthController extends Controller
             $phone = '+61' . substr($phone, 1);
 
             $user = User::where('is_active', 1)
-                ->where(function ($query) use ($phone) {
-                    $query->where('phone', $phone);
-                })
+                ->where('phone', $phone)
                 ->first();
 
             if (isset($user))
