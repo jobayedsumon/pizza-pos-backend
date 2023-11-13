@@ -151,6 +151,8 @@ class CustomerAuthController extends Controller
 
     public function registration(Request $request)
     {
+        $request['phone'] = substr($request['phone'], -10);
+
         $validator = Validator::make($request->all(), [
             'f_name' => 'required',
 //            'l_name' => 'required',
@@ -224,6 +226,8 @@ class CustomerAuthController extends Controller
 //                'password' => 'required|min:6'
 //            ]);
 //        }
+
+        $request['phone'] = substr($request['phone'], -10);
 
         $validator = Validator::make($request->all(), [
             'email_or_phone' => 'required|min:10|max:10|regex:/^0\d{9}$/|unique:users',
