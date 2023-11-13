@@ -23,7 +23,8 @@ class CustomerAuthController extends Controller
 {
     public function check_phone(Request $request)
     {
-        $request['phone'] = substr($request['phone'], -10);
+        $phone = $request['phone'];
+        $request['phone'] = substr($phone, -10);
 
         $validator = Validator::make($request->all(), [
             'phone' => 'required|min:10|max:10|regex:/^0\d{9}$/|unique:users'
@@ -33,19 +34,19 @@ class CustomerAuthController extends Controller
             return response()->json(['errors' => Helpers::error_processor($validator)], 403);
         }
 
-        if(strlen($request['phone']) == 10 && is_numeric($request['phone']) && $request['phone'][0] == 0) {
+        if(strlen($phone) == 10 && is_numeric($phone) && $phone[0] == 0) {
 
-            $request['phone'] = '+61' . substr($request['phone'], 1);
+            $phone = '+61' . substr($phone, 1);
 
             if (BusinessSetting::where(['key' => 'phone_verification'])->first()->value) {
                 $token = rand(1000, 9999);
                 DB::table('phone_verifications')->insert([
-                    'phone' => $request['phone'],
+                    'phone' => $phone,
                     'token' => $token,
                     'created_at' => now(),
                     'updated_at' => now(),
                 ]);
-                $response = SMS_module::send($request['phone'], $token);
+                $response = SMS_module::send($phone, $token);
                 return response()->json([
                     'message' => $response,
                     'token' => 'active'
@@ -155,7 +156,8 @@ class CustomerAuthController extends Controller
 
     public function registration(Request $request)
     {
-        $request['phone'] = substr($request['phone'], -10);
+        $phone = $request['phone'];
+        $request['phone'] = substr($phone, -10);
 
         $validator = Validator::make($request->all(), [
             'f_name' => 'required',
@@ -172,16 +174,16 @@ class CustomerAuthController extends Controller
             return response()->json(['errors' => Helpers::error_processor($validator)], 403);
         }
 
-        if(strlen($request['phone']) == 10 && is_numeric($request['phone']) && $request['phone'][0] == 0)
+        if(strlen($phone) == 10 && is_numeric($phone) && $phone[0] == 0)
         {
-            $request['phone'] = '+61' . substr($request['phone'], 1);
+            $phone = '+61' . substr($phone, 1);
 
             $temporary_token = Str::random(40);
             $user            = User::create([
                 'f_name'          => $request->f_name,
                 'l_name'          => $request->l_name,
                 'email'           => $request->email,
-                'phone'           => $request['phone'],
+                'phone'           => $phone,
                 'password'        => bcrypt($request->password),
                 'temporary_token' => $temporary_token,
             ]);
@@ -231,10 +233,8 @@ class CustomerAuthController extends Controller
 //            ]);
 //        }
 
-        $request['phone'] = substr($request['phone'], -10);
-
-        var_dump($request['phone']);
-        var_dump($request->all());
+        $phone = $request['email_or_phone'];
+        $request['email_or_phone'] = substr($phone, -10);
 
         $validator = Validator::make($request->all(), [
             'email_or_phone' => 'required|min:10|max:10|regex:/^0\d{9}$/|unique:users',
@@ -245,13 +245,13 @@ class CustomerAuthController extends Controller
             return response()->json(['errors' => Helpers::error_processor($validator)], 403);
         }
 
-        if(strlen($request['phone']) == 10 && is_numeric($request['phone']) && $request['phone'][0] == 0)
+        if(strlen($phone) == 10 && is_numeric($phone) && $phone[0] == 0)
         {
-            $request['phone'] = '+61' . substr($request['phone'], 1);
+            $phone = '+61' . substr($phone, 1);
 
             $user = User::where('is_active', 1)
-                ->where(function ($query) use ($request) {
-                    $query->where('phone', $request['phone']);
+                ->where(function ($query) use ($phone) {
+                    $query->where('phone', $phone);
                 })
                 ->first();
 
