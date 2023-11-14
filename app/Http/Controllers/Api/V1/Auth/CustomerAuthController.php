@@ -132,26 +132,39 @@ class CustomerAuthController extends Controller
 
     public function verify_phone(Request $request)
     {
+        $phone = substr($request['phone'], -10);
+        $request['phone'] = $phone;
+
         $validator = Validator::make($request->all(), [
-            'phone' => 'required'
+            'phone' => 'required|min:10|max:10|regex:/^0\d{9}$/|unique:users'
         ]);
 
         if ($validator->fails()) {
             return response()->json(['errors' => Helpers::error_processor($validator)], 403);
         }
 
-        $verify = PhoneVerification::where(['phone' => $request['phone'], 'token' => $request['token']])->first();
+        if(strlen($phone) == 10 && is_numeric($phone) && $phone[0] == 0)
+        {
+            $phone = '+61' . substr($phone, 1);
 
-        if (isset($verify)) {
-            $verify->delete();
-            return response()->json([
-                'message' => translate('OTP verified!'),
-            ], 200);
+            $verify = PhoneVerification::where(['phone' => $phone, 'token' => $request['token']])->first();
+
+            if (isset($verify))
+            {
+                $verify->delete();
+                return response()->json([
+                    'message' => translate('OTP verified!'),
+                ], 200);
+            }
+
+            return response()->json(['errors' => [
+                ['code' => 'token', 'message' => translate('OTP is not found!')]
+            ]], 404);
         }
 
         return response()->json(['errors' => [
-            ['code' => 'token', 'message' => translate('OTP is not found!')]
-        ]], 404);
+            ['code' => 'phone', 'message' => translate('Invalid phone number!')]
+        ]], 403);
     }
 
     public function registration(Request $request)
